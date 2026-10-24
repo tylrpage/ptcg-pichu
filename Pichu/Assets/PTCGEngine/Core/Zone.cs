@@ -8,5 +8,6 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         Bench,
         Discard,
         Prize,
+        Stadium,
     }   
 }

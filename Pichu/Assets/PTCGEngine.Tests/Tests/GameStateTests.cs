@@ -79,6 +79,7 @@ namespace tylrpage.Pichu.PTCGEngine.Tests
             _state.Player1State.Deck.Remove(energy);
             energy.ParentCardInstanceId = pokemon.Id;
             pokemon.AttachedEnergy.Add(energy);
+            energy.Zone = pokemon.Zone;
             
             Assert.That(energy, Is.Not.Null);
             Assert.That(_state.GetAllCards().Count(), Is.EqualTo(120));
@@ -100,6 +101,7 @@ namespace tylrpage.Pichu.PTCGEngine.Tests
             _state.Player1State.Deck.Remove(energy);
             energy.ParentCardInstanceId = pokemon.Id;
             pokemon.AttachedEnergy.Add(energy);
+            energy.Zone = pokemon.Zone;
             
             // assert that the attached energy could still be found
             Assert.That(_state.FindCard(energy.Id), Is.Not.Null);
@@ -121,6 +123,7 @@ namespace tylrpage.Pichu.PTCGEngine.Tests
             _state.Player1State.Deck.Remove(energy);
             energy.ParentCardInstanceId = pokemon.Id;
             pokemon.AttachedEnergy.Add(energy);
+            energy.Zone = pokemon.Zone;
             
             // clone
             GameState clone = _state.Clone();
@@ -154,6 +157,25 @@ namespace tylrpage.Pichu.PTCGEngine.Tests
             Assert.That(clone.Player1State.Hand.Count, Is.EqualTo(1));
             Assert.That(_state.Player1State.Deck.Count, Is.EqualTo(60));
             Assert.That(_state.Player1State.Hand.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Move_BringsAttachedEnergy()
+        {
+            CardInstance pokemon = _state.Player1State.Deck.First(x => x.CardDefinitionId == TestCards.TreeckoId);
+            CardInstance energy = _state.Player1State.Deck.First(x => x.CardDefinitionId == TestCards.GrassId);
+            
+            _state.MoveCard(pokemon, Zone.Bench);
+            _state.AttachEnergy(energy, pokemon);
+            
+            Assert.That(_state.Player1State.Deck.Count, Is.EqualTo(58));
+            Assert.That(_state.Player1State.Bench.Count, Is.EqualTo(1));
+            Assert.That(_state.Player1State.Bench[0].Id, Is.EqualTo(pokemon.Id));
+            Assert.That(energy.ParentCardInstanceId, Is.EqualTo(pokemon.Id));
+            Assert.That(pokemon.AttachedEnergy[0].Id, Is.EqualTo(energy.Id));
+            // Check that zones updated on moved card and attachment
+            Assert.That(pokemon.Zone, Is.EqualTo(Zone.Bench));
+            Assert.That(energy.Zone, Is.EqualTo(Zone.Bench));
         }
     }
 }

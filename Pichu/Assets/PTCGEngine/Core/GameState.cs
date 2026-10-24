@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -58,6 +59,14 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         private static IEnumerable<CardInstance> WithAttachments(CardInstance parent)
         {
             yield return parent;
+            foreach (CardInstance attachment in OnlyAttachments(parent))
+            {
+                yield return attachment;
+            }
+        }
+
+        private static IEnumerable<CardInstance> OnlyAttachments(CardInstance parent)
+        {
             foreach (CardInstance card in parent.AttachedEnergy) yield return card;
             foreach (CardInstance card in parent.AttachedTools) yield return card;
             foreach (CardInstance card in parent.AttachedPokemon) yield return card;
@@ -90,7 +99,82 @@ namespace tylrpage.Pichu.PTCGEngine.Core
 
         public int GetNextCardInstanceId()
         {
+            // Important that we start at 1, since cards use "0" to mean no card
             return ++NextCardInstanceId;
+        }
+        
+        private void RemoveCardFromCurrentLocation(CardInstance card)
+        {
+            // Remove from current location
+            PlayerState player = GetPlayer(card.IsOwnedByPlayer1);
+            switch (card.Zone)
+            {
+                case Zone.Active:
+                    player.Active = null;
+                    break;
+                case Zone.Deck:
+                    player.Deck.Remove(card);
+                    break;
+                case Zone.Hand:
+                    player.Hand.Remove(card);
+                    break;
+                case Zone.Discard:
+                    player.Discard.Remove(card);
+                    break;
+                case Zone.Bench:
+                    player.Bench.Remove(card);
+                    break;
+                case Zone.Prize:
+                    player.Prize.Remove(card);
+                    break;
+            }
+            
+            // Un-parent
+            if (card.ParentCardInstanceId != 0)
+            {
+                CardInstance parent = FindCard(card.ParentCardInstanceId);
+                parent.AttachedEnergy.Remove(card);
+                parent.AttachedTools.Remove(card);
+                parent.AttachedPokemon.Remove(card);
+
+                card.ParentCardInstanceId = 0;
+            }
+        }
+
+        public void MoveCard(CardInstance card, Zone zone)
+        {
+            RemoveCardFromCurrentLocation(card);
+            
+            PlayerState player = GetPlayer(card.IsOwnedByPlayer1);
+            // Block attempt to move into occupied active position
+            if (zone == Zone.Active && player.Active != null)
+            {
+                throw new ArgumentException("Attempted to move card to occupied active zone");
+            }
+            
+            // Bump stadium
+            if (zone == Zone.Stadium && Stadium != null)
+            {
+                MoveCard(Stadium, Zone.Discard);
+            }
+            
+            Board.AddCardInstanceToZone(this, card, player, zone);
+            
+            // Update attachments' zones to match
+            foreach (CardInstance attachment in OnlyAttachments(card))
+            {
+                attachment.Zone = zone;
+            }
+        }
+
+        public void AttachEnergy(CardInstance energy, CardInstance target)
+        {
+            RemoveCardFromCurrentLocation(energy);
+            
+            energy.ParentCardInstanceId = target.Id;
+            energy.Zone = target.Zone;
+            
+            target.AttachedEnergy.Add(energy);
         }
     }   
 }
