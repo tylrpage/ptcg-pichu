@@ -9,12 +9,17 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
         
         public CardDefinition GetDefinition(string cardDefinitionId)
         {
-            throw new System.NotImplementedException();
+            return _memoryDatabase.GetValueOrDefault(cardDefinitionId);
         }
 
         public bool TryGetCardDefinition(string cardDefinitionId, out CardDefinition cardDefinition)
         {
-            throw new System.NotImplementedException();
+            return _memoryDatabase.TryGetValue(cardDefinitionId, out cardDefinition);
+        }
+
+        public void AddDefinition(CardDefinition cardDefinition)
+        {
+            _memoryDatabase.Add(cardDefinition.CardDefinitionId, cardDefinition);
         }
     }
 }
