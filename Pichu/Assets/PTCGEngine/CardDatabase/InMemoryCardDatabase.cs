@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using tylrpage.Pichu.PTCGEngine.Core;
 
 namespace tylrpage.Pichu.PTCGEngine.CardDatabase
@@ -7,9 +8,14 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
     {
         private Dictionary<string, CardDefinition> _memoryDatabase = new();
         
-        public CardDefinition GetDefinition(string cardDefinitionId)
+        public CardDefinition GetCardDefinition(string cardDefinitionId)
         {
-            return _memoryDatabase.GetValueOrDefault(cardDefinitionId);
+            if (!_memoryDatabase.TryGetValue(cardDefinitionId, out CardDefinition cardDefinition))
+            {
+                throw new ArgumentException("Card definition not found, cardDefinitionId: {cardDefinitionId}");
+            }
+            
+            return cardDefinition;
         }
 
         public bool TryGetCardDefinition(string cardDefinitionId, out CardDefinition cardDefinition)

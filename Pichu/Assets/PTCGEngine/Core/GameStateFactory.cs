@@ -17,20 +17,25 @@ namespace tylrpage.Pichu.PTCGEngine.Core
             // Load up decks
             foreach (string cardDefinitionId in deck1)
             {
-                CardInstance cardInstance = CreateCardInstance(gameState, cardDefinitionId, true);
+                CardInstance cardInstance = CreateCardInstance(gameState, db, cardDefinitionId, true);
                 AddCardInstanceToZone(gameState, cardInstance, gameState.Player1State, Zone.Deck);
             }
             foreach (string cardDefinitionId in deck2)
             {
-                CardInstance cardInstance = CreateCardInstance(gameState, cardDefinitionId, false);
+                CardInstance cardInstance = CreateCardInstance(gameState, db, cardDefinitionId, false);
                 AddCardInstanceToZone(gameState, cardInstance, gameState.Player2State, Zone.Deck);
             }
 
             return gameState;
         }
 
-        private static CardInstance CreateCardInstance(GameState gameState, string cardDefinitionId, bool isOwnedByPlayer1)
+        private static CardInstance CreateCardInstance(GameState gameState, ICardDatabase db, string cardDefinitionId, bool isOwnedByPlayer1)
         {
+            if (!db.TryGetCardDefinition(cardDefinitionId, out CardDefinition cardDefinition))
+            {
+                throw new ArgumentException($"Unknown card definition id: {cardDefinitionId}");
+            }
+            
             return new CardInstance()
             {
                 Id = gameState.GetNextCardInstanceId(),

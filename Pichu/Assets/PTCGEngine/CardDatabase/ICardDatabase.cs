@@ -4,7 +4,7 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
 {
     public interface ICardDatabase
     {
-        CardDefinition GetDefinition(string cardDefinitionId);
+        CardDefinition GetCardDefinition(string cardDefinitionId);
         bool TryGetCardDefinition(string cardDefinitionId, out CardDefinition cardDefinition);
     }
 }
