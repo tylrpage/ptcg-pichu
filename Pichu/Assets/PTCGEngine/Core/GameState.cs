@@ -48,8 +48,9 @@ namespace tylrpage.Pichu.PTCGEngine.Core
                 }
             }
             
-            // Deck, discard, and prize cards don't have any attachments
+            // Deck, hand, discard, and prize cards don't have any attachments
             foreach (CardInstance card in playerState.Deck) yield return card;
+            foreach (CardInstance card in playerState.Hand) yield return card;
             foreach (CardInstance card in playerState.Discard) yield return card;
             foreach (CardInstance card in playerState.Prize) yield return card;
         }
