@@ -4,13 +4,11 @@ using tylrpage.Pichu.PTCGEngine.CardDatabase;
 
 namespace tylrpage.Pichu.PTCGEngine.Core
 {
-    public class GameStateFactory
+    public static class GameStateFactory
     {
-        public GameState GameState;
-        
-        public void Create(ICardDatabase db, IList<string> deck1, IList<string> deck2)
+        public static GameState Create(ICardDatabase db, IList<string> deck1, IList<string> deck2)
         {
-            GameState = new GameState()
+            GameState gameState = new GameState()
             {
                 Player1State = new(),
                 Player2State = new(),
@@ -19,21 +17,23 @@ namespace tylrpage.Pichu.PTCGEngine.Core
             // Load up decks
             foreach (string cardDefinitionId in deck1)
             {
-                CardInstance cardInstance = CreateCardInstance(cardDefinitionId, true);
-                AddCardInstanceToZone(cardInstance, GameState.Player1State, Zone.Deck);
+                CardInstance cardInstance = CreateCardInstance(gameState, cardDefinitionId, true);
+                AddCardInstanceToZone(gameState, cardInstance, gameState.Player1State, Zone.Deck);
             }
             foreach (string cardDefinitionId in deck2)
             {
-                CardInstance cardInstance = CreateCardInstance(cardDefinitionId, false);
-                AddCardInstanceToZone(cardInstance, GameState.Player2State, Zone.Deck);
+                CardInstance cardInstance = CreateCardInstance(gameState, cardDefinitionId, false);
+                AddCardInstanceToZone(gameState, cardInstance, gameState.Player2State, Zone.Deck);
             }
+
+            return gameState;
         }
 
-        private CardInstance CreateCardInstance(string cardDefinitionId, bool isOwnedByPlayer1)
+        private static CardInstance CreateCardInstance(GameState gameState, string cardDefinitionId, bool isOwnedByPlayer1)
         {
             return new CardInstance()
             {
-                Id = GameState.GetNextCardInstanceId(),
+                Id = gameState.GetNextCardInstanceId(),
                 CardDefinitionId = cardDefinitionId,
                 Zone = Zone.Deck,
                 IsOwnedByPlayer1 = isOwnedByPlayer1,
@@ -41,7 +41,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         }
 
         // The one place cards can get a new zone assigned, ensures their Zone prop is kept in sync
-        public void AddCardInstanceToZone(CardInstance card, PlayerState playerState, Zone zone)
+        public static void AddCardInstanceToZone(GameState gameState, CardInstance card, PlayerState playerState, Zone zone)
         {
             switch (zone)
             {

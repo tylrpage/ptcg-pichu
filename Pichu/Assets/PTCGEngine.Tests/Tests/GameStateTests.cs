@@ -15,9 +15,7 @@ namespace tylrpage.Pichu.PTCGEngine.Tests
         public void Setup()
         {
             _db = TestCards.CreateDatabase();
-            GameStateFactory factory = new GameStateFactory();
-            factory.Create(_db, TestCards.Deck(40, 20), TestCards.Deck(40, 20));
-            _state = factory.GameState;
+            _state = GameStateFactory.Create(_db, TestCards.Deck(40, 20), TestCards.Deck(40, 20));
         }
 
         [Test]
@@ -52,9 +50,7 @@ namespace tylrpage.Pichu.PTCGEngine.Tests
         [Test]
         public void Create_IsDeterministic()
         {
-            GameStateFactory factory = new GameStateFactory();
-            factory.Create(_db, TestCards.Deck(40, 20), TestCards.Deck(40, 20));
-            GameState game2 = factory.GameState;
+            GameState game2 = GameStateFactory.Create(_db, TestCards.Deck(40, 20), TestCards.Deck(40, 20));
             
             List<CardInstance> game1Cards = _state.GetAllCards().ToList();
             List<CardInstance> game2Cards = game2.GetAllCards().ToList();
