@@ -10,26 +10,33 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         
         public void Create(ICardDatabase db, IList<string> deck1, IList<string> deck2)
         {
+            GameState = new GameState()
+            {
+                Player1State = new(),
+                Player2State = new(),
+            };
+            
             // Load up decks
             foreach (string cardDefinitionId in deck1)
             {
-                CardInstance cardInstance = CreateCardInstance(cardDefinitionId);
+                CardInstance cardInstance = CreateCardInstance(cardDefinitionId, true);
                 AddCardInstanceToZone(cardInstance, GameState.Player1State, Zone.Deck);
             }
             foreach (string cardDefinitionId in deck2)
             {
-                CardInstance cardInstance = CreateCardInstance(cardDefinitionId);
+                CardInstance cardInstance = CreateCardInstance(cardDefinitionId, false);
                 AddCardInstanceToZone(cardInstance, GameState.Player2State, Zone.Deck);
             }
         }
 
-        private CardInstance CreateCardInstance(string cardDefinitionId)
+        private CardInstance CreateCardInstance(string cardDefinitionId, bool isOwnedByPlayer1)
         {
             return new CardInstance()
             {
                 Id = GameState.GetNextCardInstanceId(),
                 CardDefinitionId = cardDefinitionId,
                 Zone = Zone.Deck,
+                IsOwnedByPlayer1 = isOwnedByPlayer1,
             };
         }
 
