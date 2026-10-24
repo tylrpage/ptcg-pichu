@@ -177,5 +177,21 @@ namespace tylrpage.Pichu.PTCGEngine.Tests
             Assert.That(pokemon.Zone, Is.EqualTo(Zone.Bench));
             Assert.That(energy.Zone, Is.EqualTo(Zone.Bench));
         }
+
+        [Test]
+        public void Clone_DeterministicShuffle()
+        {
+            GameState clone = _state.Clone();
+            
+            _state.Rng.Shuffle(_state.Player1State.Deck);
+            clone.Rng.Shuffle(clone.Player1State.Deck);
+            
+            Assert.That(_state.Player1State.Deck.Count, Is.EqualTo(clone.Player1State.Deck.Count));
+            for (int i = 0; i < _state.Player1State.Deck.Count; i++)
+            {
+                Assert.That(_state.Player1State.Deck[i], Is.Not.SameAs(clone.Player1State.Deck[i]));
+                Assert.That(_state.Player1State.Deck[i].Id, Is.EqualTo(clone.Player1State.Deck[i].Id));
+            }
+        }
     }
 }

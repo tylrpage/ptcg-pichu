@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using tylrpage.Pichu.PTCGEngine.Random;
 
 namespace tylrpage.Pichu.PTCGEngine.Core
 {
@@ -10,7 +11,13 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public PlayerState Player2State;
         public CardInstance Stadium;
         public int NextCardInstanceId;
-        // public EngineStatus Status;
+        public int TurnNumber;
+        public bool IsPlayer1Turn;
+        public GamePhase Phase;
+        public TurnFlags Turn;
+        // null means game is still in progress
+        public bool? Player1Won;
+        public TinyRNG Rng = new();
         
         private static readonly JsonSerializerSettings CloneSettings = new()
         {
