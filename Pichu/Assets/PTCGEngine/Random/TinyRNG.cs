@@ -26,12 +26,12 @@ namespace tylrpage.Pichu.PTCGEngine.Random
 
         public int NextInt(int maxExclusive)
         {
-            if (maxExclusive < 0)
+            if (maxExclusive <= 0)
             {
-                throw new ArgumentException("maxExclusive cannot be negative.");
+                throw new ArgumentException("maxExclusive cannot be less than or equal to zero.");
             }
             
-            return (int)(NextULong() & (ulong)maxExclusive);
+            return (int)(NextULong() % (ulong)maxExclusive);
         }
 
         public bool CoinFlip()
