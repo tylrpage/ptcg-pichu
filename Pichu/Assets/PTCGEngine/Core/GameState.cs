@@ -112,31 +112,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         
         private void RemoveCardFromCurrentLocation(CardInstance card)
         {
-            // Remove from current location
-            PlayerState player = GetPlayer(card.IsOwnedByPlayer1);
-            switch (card.Zone)
-            {
-                case Zone.Active:
-                    player.Active = null;
-                    break;
-                case Zone.Deck:
-                    player.Deck.Remove(card);
-                    break;
-                case Zone.Hand:
-                    player.Hand.Remove(card);
-                    break;
-                case Zone.Discard:
-                    player.Discard.Remove(card);
-                    break;
-                case Zone.Bench:
-                    player.Bench.Remove(card);
-                    break;
-                case Zone.Prize:
-                    player.Prize.Remove(card);
-                    break;
-            }
-            
-            // Un-parent
+            // Children just get un-parented, zone state only tracks top level cards
             if (card.ParentCardInstanceId != 0)
             {
                 CardInstance parent = FindCard(card.ParentCardInstanceId);
@@ -145,6 +121,32 @@ namespace tylrpage.Pichu.PTCGEngine.Core
                 parent.AttachedPokemon.Remove(card);
 
                 card.ParentCardInstanceId = 0;
+            }
+            else
+            {
+                // Remove from current location's state
+                PlayerState player = GetPlayer(card.IsOwnedByPlayer1);
+                switch (card.Zone)
+                {
+                    case Zone.Active:
+                        player.Active = null;
+                        break;
+                    case Zone.Deck:
+                        player.Deck.Remove(card);
+                        break;
+                    case Zone.Hand:
+                        player.Hand.Remove(card);
+                        break;
+                    case Zone.Discard:
+                        player.Discard.Remove(card);
+                        break;
+                    case Zone.Bench:
+                        player.Bench.Remove(card);
+                        break;
+                    case Zone.Prize:
+                        player.Prize.Remove(card);
+                        break;
+                }
             }
         }
 
