@@ -168,11 +168,24 @@ namespace tylrpage.Pichu.PTCGEngine.Core
             }
             
             Board.AddCardInstanceToZone(this, card, player, zone);
-            
-            // Update attachments' zones to match
-            foreach (CardInstance attachment in OnlyAttachments(card))
+
+            // Handle attachments
+            if (zone != Zone.Bench && zone != Zone.Active)
             {
-                attachment.Zone = zone;
+                // Attachments don't stay attached, move them separately
+                foreach (CardInstance attachment in OnlyAttachments(card))
+                {
+                    MoveCard(attachment, zone);
+                }
+            }
+            else
+            {
+                // Attachments can come along, update their zone
+                foreach (CardInstance attachment in OnlyAttachments(card))
+                {
+                    // Update attachments' zones to match
+                    attachment.Zone = zone; 
+                }
             }
         }
 
