@@ -1,6 +1,6 @@
 {
     "name": "PTCGEngine",
-    "rootNamespace": "",
+    "rootNamespace": "tylrpage.Pichu.PTCGEngine",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

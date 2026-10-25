@@ -18,6 +18,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         // null means game is still in progress
         public bool? Player1Won;
         public TinyRNG Rng = new();
+        public bool EndTurnRequested;
         
         private static readonly JsonSerializerSettings CloneSettings = new()
         {

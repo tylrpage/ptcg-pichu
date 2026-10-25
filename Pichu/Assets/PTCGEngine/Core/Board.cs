@@ -6,7 +6,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core
     public static class Board
     {
         // The one place cards can get a new zone assigned, ensures their Zone prop is kept in sync
-        public static void AddCardInstanceToZone(GameState gameState, CardInstance card, PlayerState playerState, Zone zone)
+        internal static void AddCardInstanceToZone(GameState gameState, CardInstance card, PlayerState playerState, Zone zone)
         {
             switch (zone)
             {

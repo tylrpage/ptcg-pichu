@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace tylrpage.Pichu.PTCGEngine.Core
+namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 {
     public class CommandResult
     {
