@@ -48,7 +48,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         {
             return new PlayerCommand()
             {
-                Type = CommandType.AttachEnergy,
+                Type = CommandType.ManualAttachEnergy,
                 IsPlayer1 = p1,
                 CardId = energyId,
                 TargetId = targetId,

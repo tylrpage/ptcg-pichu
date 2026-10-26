@@ -1,5 +1,6 @@
 ﻿using System;
 using tylrpage.Pichu.PTCGEngine.CardDatabase;
+using tylrpage.Pichu.PTCGEngine.Core.Rules;
 
 namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 {
@@ -7,11 +8,11 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
     {
         public static CommandResult Submit(GameState state, PlayerCommand command, ICardDatabase db)
         {
-            // todo: Hook up rule checker here
-            // if (rejected)
-            // {
-            //     return CommandResult.Rejected(state, "");
-            // }
+            RuleChecker.RuleResult ruleResult = RuleChecker.Check(state, command, db);
+            if (ruleResult != RuleChecker.RuleResult.Ok)
+            {
+                return CommandResult.Rejected(state, ruleResult.ToString());
+            }
             
             ResolveContext ctx = new()
             {
@@ -21,8 +22,8 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 Events = new(),
             };
             
-            // todo:
             // Turn command into game steps and queue them
+            QueueStepsForCommand(command, ctx);
 
             int iterations = 0;
             while (true)
@@ -59,6 +60,31 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 return CommandResult.GameOver(ctx.WorkingState, ctx.Events);
             }
             return CommandResult.Ok(ctx.WorkingState, ctx.Events);
+        }
+
+        private static void QueueStepsForCommand(PlayerCommand command, ResolveContext ctx)
+        {
+            switch (command.Type)
+            {
+                case CommandType.PlaceBasic:
+                    ctx.QueueNext(new MoveCardStep()
+                    {
+                        CardId = command.CardId,
+                        To = Zone.Bench,
+                    });
+                    break;
+                case CommandType.ManualAttachEnergy:
+                    ctx.QueueNext(new AttachEnergyStep()
+                    {
+                        EnergyId = command.CardId,
+                        TargetId = command.TargetId,
+                        IsManual = true,
+                    });
+                    break;
+                case CommandType.EndTurn:
+                    ctx.QueueNext(new EndTurnStep());
+                    break;
+            }
         }
         
         // Returns true if any new steps were queued

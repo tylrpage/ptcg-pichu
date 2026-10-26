@@ -4,7 +4,7 @@
     {
         None = 0,
         PlaceBasic = 1,
-        AttachEnergy = 2,
+        ManualAttachEnergy = 2,
         EndTurn = 3,
     }
 }
