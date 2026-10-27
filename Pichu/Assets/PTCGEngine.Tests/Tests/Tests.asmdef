@@ -1,6 +1,6 @@
 {
     "name": "Tests",
-    "rootNamespace": "",
+    "rootNamespace": "tylrpage.Pichu",
     "references": [
         "GUID:2921e1ff18b669b48ac4a6fb86ad081c",
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
@@ -13,7 +13,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

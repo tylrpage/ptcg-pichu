@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using tylrpage.Pichu.PTCGEngine.Random;
 
-namespace tylrpage.Pichu.PTCGEngine.Tests
+namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
 {
     public class RngTests
     {

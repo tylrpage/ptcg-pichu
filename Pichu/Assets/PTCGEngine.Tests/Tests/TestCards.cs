@@ -3,7 +3,7 @@ using NUnit.Framework;
 using tylrpage.Pichu.PTCGEngine.CardDatabase;
 using tylrpage.Pichu.PTCGEngine.Core;
 
-namespace tylrpage.Pichu.PTCGEngine.Tests
+namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
 {
     // Contains helper classes to setup tests
     public class TestCards

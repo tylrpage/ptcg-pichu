@@ -25,12 +25,11 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             for (int i = 0; i < 2; i++)
             {
                 bool isPlayer1 = i == 0 ? true : false;
-                PlayerState player = ctx.WorkingState.GetPlayer(isPlayer1);
-                ctx.QueueNext(new ShuffleDeckStep()
+                ctx.Queue.AddLast(new ShuffleDeckStep()
                 {
                     IsPlayer1 = isPlayer1,
                 });
-                ctx.QueueNext(new DrawStep()
+                ctx.Queue.AddLast(new DrawStep()
                 {
                     IsPlayer1 = isPlayer1,
                     IsTurnDraw = false,
@@ -38,30 +37,22 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 });
                 
                 // Put the first basic in active
-                CardInstance firstBasic =
-                    player.Hand.FirstOrDefault(x => CardQueries.IsBasicPokemon(x, ctx.WorkingState, db));
-                if (firstBasic == null)
+                ctx.Queue.AddLast(new AutoPlaceStartingActiveStep()
                 {
-                    // todo: add mulligans
-                    throw new InvalidOperationException($"Player {(isPlayer1 ? "1" : "2")} has no basics in hand");
-                }
-                ctx.QueueNext(new MoveCardStep()
-                {
-                    CardId = firstBasic.Id,
-                    To = Zone.Active,
+                    IsPlayer1 = isPlayer1,
                 });
                 
                 // Setup prize cards
-                ctx.QueueNext(new SetPrizesStep()
+                ctx.Queue.AddLast(new SetPrizesStep()
                 {
-                    IsPlayer1 = true,
+                    IsPlayer1 = isPlayer1,
                 });
             }
             
             // Get the game started
             // todo: flip and stuff for who goes first
-            ctx.QueueNext(new EndSetupStep() { },
-                new StartTurnStep() { IsPlayer1 = true });
+            ctx.Queue.AddLast(new EndSetupStep() { });
+            ctx.Queue.AddLast(new StartTurnStep() { IsPlayer1 = true });
 
             return RunToCompletion(ctx);
         }
