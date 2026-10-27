@@ -4,7 +4,7 @@
     {
         public bool IsPlayer1;
         
-        public override void Run(ResolveContext ctx)
+        public override void Run(ResolverContext ctx)
         {
             ctx.WorkingState.TurnNumber++;
             ctx.WorkingState.IsPlayer1Turn = IsPlayer1;
@@ -20,6 +20,7 @@
             {
                 IsPlayer1 = ctx.WorkingState.IsPlayer1Turn,
                 IsTurnDraw = true,
+                Number = 1,
             });
         }
     }

@@ -4,6 +4,9 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
 {
     public static class CardQueries
     {
+        public const int StartingHandSize = 7;
+        public const int StartingPrizeCardCount = 6;
+        
         public static bool IsBasicPokemon(CardInstance card, GameState state, ICardDatabase db)
         {
             CardDefinition cardDefinition = db.GetCardDefinition(card.CardDefinitionId);

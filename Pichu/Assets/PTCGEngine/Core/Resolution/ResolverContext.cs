@@ -3,7 +3,7 @@ using tylrpage.Pichu.PTCGEngine.CardDatabase;
 
 namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 {
-    public class ResolveContext
+    public class ResolverContext
     {
         public GameState WorkingState;
         public ICardDatabase CardDatabase;

@@ -2,6 +2,6 @@
 {
     public abstract class GameStep
     {
-        public abstract void Run(ResolveContext ctx);
+        public abstract void Run(ResolverContext ctx);
     }
 }

@@ -6,7 +6,7 @@
         public int TargetId;
         public bool IsManual;
         
-        public override void Run(ResolveContext ctx)
+        public override void Run(ResolverContext ctx)
         {
             CardInstance energy = ctx.WorkingState.FindCard(EnergyId);
             CardInstance target = ctx.WorkingState.FindCard(TargetId);

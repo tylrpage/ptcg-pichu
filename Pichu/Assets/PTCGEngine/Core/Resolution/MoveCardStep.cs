@@ -5,7 +5,7 @@
         public int CardId;
         public Zone To;
         
-        public override void Run(ResolveContext ctx)
+        public override void Run(ResolverContext ctx)
         {
             CardInstance card = ctx.WorkingState.FindCard(CardId);
             Zone from = card.Zone;

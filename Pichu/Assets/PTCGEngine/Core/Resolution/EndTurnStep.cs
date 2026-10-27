@@ -2,7 +2,7 @@
 {
     public class EndTurnStep : GameStep
     {
-        public override void Run(ResolveContext ctx)
+        public override void Run(ResolverContext ctx)
         {
             ctx.WorkingState.EndTurnRequested = true;
             
