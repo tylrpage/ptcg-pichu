@@ -3,35 +3,49 @@ using tylrpage.Pichu.PTCGEngine.CardDatabase;
 
 namespace tylrpage.Pichu.PTCGEngine.Core.Rules
 {
+    public enum RuleResult
+    {
+        Ok,
+        GameAlreadyOver,
+        NotYourTurn,
+        WrongPhase,
+        NoCommand,
+        CardNotFound,
+        NotInHand,
+        NotBasicPokemon,
+        BenchFull,
+        NotEnergy,
+        NotOwned,
+        TargetNotOwned,
+        NotPokemon,
+        TargetNotInPlay,
+        TargetIsAttached,
+        EnergyAlreadyAttachedForTurn,
+    }
+    
     public static class RuleChecker
     {
-        public enum RuleResult
-        {
-            Ok,
-            Invalid,
-        }
-        
         public static RuleResult Check(GameState state, PlayerCommand command, ICardDatabase db)
         {
             if (state.Player1Won.HasValue)
             {
-                return RuleResult.Invalid;
+                return RuleResult.GameAlreadyOver;
             }
 
             if (state.IsPlayer1Turn != command.IsPlayer1)
             {
-                return RuleResult.Invalid;
+                return RuleResult.NotYourTurn;
             }
 
             if (state.Phase != GamePhase.Main)
             {
-                return RuleResult.Invalid;
+                return RuleResult.WrongPhase;
             }
 
             switch (command.Type)
             {
                 case CommandType.None:
-                    return RuleResult.Invalid;
+                    return RuleResult.NoCommand;
                 case CommandType.PlaceBasic:
                     return CheckPlaceBasic(state, command, db);
                 case CommandType.ManualAttachEnergy:
@@ -48,26 +62,26 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
             CardInstance card = state.FindCard(command.CardId);
             if (card == null)
             {
-                return RuleResult.Invalid;
+                return RuleResult.CardNotFound;
             }
             
             // Card is in hand (if true, we know we own it)
             if (!state.GetPlayer(command.IsPlayer1).Hand.Contains(card))
             {
-                return RuleResult.Invalid;
+                return RuleResult.NotInHand;
             }
 
             // Card is a basic pokemon
             if (!CardQueries.IsBasicPokemon(card, state, db))
             {
-                return RuleResult.Invalid;
+                return RuleResult.NotBasicPokemon;
             }
 
             // Has bench space
             int maxBenchSize = CardQueries.GetMaxBenchSize(state.GetPlayer(command.IsPlayer1), state);
             if (state.GetPlayer(command.IsPlayer1).Bench.Count >= maxBenchSize)
             {
-                return RuleResult.Invalid;
+                return RuleResult.BenchFull;
             }
 
             return RuleResult.Ok;
@@ -75,60 +89,60 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
 
         private static RuleResult CheckAttachEnergy(GameState state, PlayerCommand command, ICardDatabase db)
         {
+            // Energy wasn't already attached for turn
+            if (state.Turn.EnergyAttached)
+            {
+                return RuleResult.EnergyAlreadyAttachedForTurn;
+            }
+            
             // Check energy
             CardInstance card = state.FindCard(command.CardId);
             if (card == null)
             {
-                return RuleResult.Invalid;
+                return RuleResult.CardNotFound;
             }
 
             if (!CardQueries.IsEnergy(card, state, db))
             {
-                return RuleResult.Invalid;
+                return RuleResult.NotEnergy;
             }
             
             if (card.IsOwnedByPlayer1 != command.IsPlayer1)
             {
-                return RuleResult.Invalid;
+                return RuleResult.NotOwned;
             }
             
             // Energy is in hand (if true, we know we own it)
             if (!state.GetPlayer(command.IsPlayer1).Hand.Contains(card))
             {
-                return RuleResult.Invalid;
+                return RuleResult.NotInHand;
             }
             
             // Check target
             CardInstance target = state.FindCard(command.TargetId);
             if (target == null)
             {
-                return RuleResult.Invalid;
+                return RuleResult.CardNotFound;
             }
 
             if (!CardQueries.IsPokemon(card, state, db))
             {
-                return RuleResult.Invalid;
+                return RuleResult.NotPokemon;
             }
 
             if (target.Zone != Zone.Active && target.Zone != Zone.Bench)
             {
-                return RuleResult.Invalid;
+                return RuleResult.TargetNotInPlay;
             }
 
             if (target.IsOwnedByPlayer1 != command.IsPlayer1)
             {
-                return RuleResult.Invalid;
+                return RuleResult.TargetNotOwned;
             }
 
             if (target.ParentCardInstanceId != 0)
             {
-                return RuleResult.Invalid;
-            }
-            
-            // Energy wasn't already attached for turn
-            if (state.Turn.EnergyAttached)
-            {
-                return RuleResult.Invalid;
+                return RuleResult.TargetIsAttached;
             }
 
             return RuleResult.Ok;

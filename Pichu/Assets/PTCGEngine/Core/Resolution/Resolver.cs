@@ -8,8 +8,8 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
     {
         public static CommandResult Submit(GameState state, PlayerCommand command, ICardDatabase db)
         {
-            RuleChecker.RuleResult ruleResult = RuleChecker.Check(state, command, db);
-            if (ruleResult != RuleChecker.RuleResult.Ok)
+            RuleResult ruleResult = RuleChecker.Check(state, command, db);
+            if (ruleResult != RuleResult.Ok)
             {
                 return CommandResult.Rejected(state, ruleResult.ToString());
             }
@@ -42,11 +42,6 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                     step.Run(ctx);
 
                     iterations++;
-                }
-
-                if (ctx.WorkingState.Phase == GamePhase.GameOver)
-                {
-                    break;
                 }
 
                 if (!RunAfterQueueChecks(ctx))
