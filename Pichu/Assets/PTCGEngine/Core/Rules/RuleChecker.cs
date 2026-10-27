@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using tylrpage.Pichu.PTCGEngine.CardDatabase;
 
 namespace tylrpage.Pichu.PTCGEngine.Core.Rules
@@ -25,7 +27,37 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
     
     public static class RuleChecker
     {
-        public static RuleResult Check(GameState state, PlayerCommand command, ICardDatabase db)
+        public static IEnumerable<PlayerCommand> GetLegalCommands(GameState state, bool isPlayer1Turn, ICardDatabase db)
+        {
+            List<PlayerCommand> possibleCommands = new();
+            PlayerState player = state.GetPlayer(isPlayer1Turn);
+            
+            // End turn
+            possibleCommands.Add(PlayerCommand.EndTurn(isPlayer1Turn));
+            
+            // Place basic
+            // Generate for every pokemon in hand
+            possibleCommands.AddRange(player.Hand
+                .Where(x => CardQueries.IsPokemon(x, state, db))
+                .Select(x => PlayerCommand.PlaceBasic(isPlayer1Turn, x.Id)));
+            
+            // Generate for every energy and in play pokemon pair
+            IEnumerable<CardInstance> energiesInHand = player.Hand.Where(x => CardQueries.IsEnergy(x, state, db));
+            IEnumerable<CardInstance> pokemonInPlay =
+                player.Bench.Append(player.Active).Where(x => CardQueries.IsPokemon(x, state, db));
+            foreach (CardInstance energy in energiesInHand)
+            {
+                foreach (CardInstance pokemon in pokemonInPlay)
+                {
+                    possibleCommands.Add(PlayerCommand.AttachEnergy(isPlayer1Turn, energy.Id, pokemon.Id));
+                }
+            }
+            
+            // Filter for legal commands
+            return possibleCommands.Where(x => Check(x, state, db) == RuleResult.Ok);
+        }
+        
+        public static RuleResult Check(PlayerCommand command, GameState state, ICardDatabase db)
         {
             if (state.Player1Won.HasValue)
             {

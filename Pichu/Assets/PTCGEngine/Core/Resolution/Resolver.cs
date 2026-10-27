@@ -8,7 +8,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
     {
         public static CommandResult Submit(GameState state, PlayerCommand command, ICardDatabase db)
         {
-            RuleResult ruleResult = RuleChecker.Check(state, command, db);
+            RuleResult ruleResult = RuleChecker.Check(command, state, db);
             if (ruleResult != RuleResult.Ok)
             {
                 return CommandResult.Rejected(state, ruleResult.ToString());
