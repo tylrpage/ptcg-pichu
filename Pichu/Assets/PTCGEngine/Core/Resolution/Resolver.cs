@@ -62,7 +62,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             RuleResult ruleResult = RuleChecker.Check(command, state, db);
             if (ruleResult != RuleResult.Ok)
             {
-                return CommandResult.Rejected(state, ruleResult.ToString());
+                return CommandResult.Rejected(state, ruleResult);
             }
 
             ResolverContext ctx = CreateContext(state, db);

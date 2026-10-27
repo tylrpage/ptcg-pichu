@@ -23,7 +23,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 
                 CardInstance topCard = deck[^1];
                 ctx.WorkingState.MoveCard(topCard, Zone.Prize);
-                // todo: make an event for it
+                ctx.Events.Add(new CardMoved()
+                {
+                    CardId = topCard.Id,
+                    From = Zone.Deck,
+                    To = Zone.Prize,
+                });
             }
         }
     }

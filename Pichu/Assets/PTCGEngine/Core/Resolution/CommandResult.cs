@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using tylrpage.Pichu.PTCGEngine.Core.Rules;
 
 namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 {
@@ -14,7 +15,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
         public CommandStatus Status;
         public GameState State;
         public List<GameEvent> Events = new();
-        public string RejectReason;
+        public RuleResult RejectReason;
 
         public static CommandResult Ok(GameState state, List<GameEvent> events)
         {
@@ -26,7 +27,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             };
         }
         
-        public static CommandResult Rejected(GameState state, string rejectionReason)
+        public static CommandResult Rejected(GameState state, RuleResult rejectionReason)
         {
             return new CommandResult()
             {
