@@ -33,5 +33,17 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
         {
             return 5;
         }
+
+        public static int GetMaxHP(CardInstance card, GameState state, ICardDatabase db)
+        {
+            CardDefinition cardDefinition = db.GetCardDefinition(card.CardDefinitionId);
+            return cardDefinition.HP;
+        }
+
+        public static int GetRemainingHP(CardInstance card, GameState state, ICardDatabase db)
+        {
+            int maxHP = GetMaxHP(card, state, db);
+            return maxHP - (card.DamageCounters * 10);
+        }
     }
 }
