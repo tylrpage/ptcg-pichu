@@ -242,6 +242,7 @@ GameObject:
   - component: {fileID: 2121379646615556914}
   - component: {fileID: 673091571025296143}
   - component: {fileID: 5205639750121423495}
+  - component: {fileID: 6788394772801601286}
   m_Layer: 5
   m_Name: CardView
   m_TagString: Untagged
@@ -336,6 +337,28 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &6788394772801601286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3585642215035682583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 405cc3be7e73efe438d0e83370891c5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PTCGPresentation::CardView
+  _idText: {fileID: 1392843836179477919}
+  _nameText: {fileID: 2685327266112525469}
+  _hpText: {fileID: 1040452514261174430}
+  _energyContainer: {fileID: 5867468031408794205}
+  _elementTokenPrefabs:
+    list:
+    - Key: 2
+      Value: {fileID: 131774226966014208, guid: 42c996ff1686860428942bdd0649b434, type: 3}
+    - Key: 4
+      Value: {fileID: 131774226966014208, guid: 1dfeee882263c2f4da98e15244a25105, type: 3}
 --- !u!1 &4517922364653593051
 GameObject:
   m_ObjectHideFlags: 0

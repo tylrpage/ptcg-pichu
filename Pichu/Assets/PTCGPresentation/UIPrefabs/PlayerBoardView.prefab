@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 2642175622691758881}
   - component: {fileID: 4103653127429633226}
   - component: {fileID: 1018254417927605809}
+  - component: {fileID: 3560956971483679025}
   m_Layer: 5
   m_Name: PlayerBoardView
   m_TagString: Untagged
@@ -169,6 +170,25 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3560956971483679025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821754168205464128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c037f4cc24d7e5d4490631506b2e4df2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PTCGPresentation::PlayerBoardView
+  _cardViewPrefab: {fileID: 6788394772801601286, guid: 21f84d512afe4544aab9c5683a4b8899, type: 3}
+  _active: {fileID: 8723411256040829619}
+  _benchContainer: {fileID: 594576729191792818}
+  _handContainer: {fileID: 3008272441257672206}
+  _deckText: {fileID: 3932030844068835796}
+  _discardText: {fileID: 1309049475713462502}
+  _prizeText: {fileID: 8955168087829811080}
 --- !u!1 &2384796255625274366
 GameObject:
   m_ObjectHideFlags: 0
@@ -261,7 +281,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ScrollRect
   m_Content: {fileID: 3008272441257672206}
   m_Horizontal: 1
-  m_Vertical: 1
+  m_Vertical: 0
   m_MovementType: 1
   m_Elasticity: 0.1
   m_Inertia: 1
@@ -2174,6 +2194,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4122997706245366854, guid: 21f84d512afe4544aab9c5683a4b8899, type: 3}
   m_PrefabInstance: {fileID: 2826836998172446133}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8723411256040829619 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6788394772801601286, guid: 21f84d512afe4544aab9c5683a4b8899, type: 3}
+  m_PrefabInstance: {fileID: 2826836998172446133}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 405cc3be7e73efe438d0e83370891c5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PTCGPresentation::CardView
 --- !u!1001 &4361181106863852670
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -2596,6 +2596,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3560956971483679025, guid: 7955972b522290b409950c4dbc0a6441, type: 3}
+      propertyPath: _isPlayer1
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3612566622569378982, guid: 7955972b522290b409950c4dbc0a6441, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -3986,6 +3990,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2642175622691758881, guid: 7955972b522290b409950c4dbc0a6441, type: 3}
   m_PrefabInstance: {fileID: 437301913}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &437301915 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3560956971483679025, guid: 7955972b522290b409950c4dbc0a6441, type: 3}
+  m_PrefabInstance: {fileID: 437301913}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c037f4cc24d7e5d4490631506b2e4df2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PTCGPresentation::PlayerBoardView
 --- !u!1 &481802302
 GameObject:
   m_ObjectHideFlags: 0
@@ -4038,7 +4053,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ScrollRect
   m_Content: {fileID: 1372371756}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1
@@ -6303,7 +6318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ScrollRect
   m_Content: {fileID: 1397341615}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1
@@ -6687,6 +6702,55 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7522163516926644081, guid: c41fb3844deb110499607671cde467db, type: 3}
   m_PrefabInstance: {fileID: 1429636541}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1444274949
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1444274951}
+  - component: {fileID: 1444274950}
+  m_Layer: 0
+  m_Name: MatchController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1444274950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444274949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c34d19ee05bb6f1489948fa1ac4a41a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PTCGPresentation::MatchController
+  _seed: 0
+  _pichus: 15
+  _rayquazas: 8
+  _fire: 22
+  _lightning: 15
+--- !u!4 &1444274951
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444274949}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1459661021
 GameObject:
   m_ObjectHideFlags: 0
@@ -6974,8 +7038,9 @@ GameObject:
   - component: {fileID: 1514203078}
   - component: {fileID: 1514203077}
   - component: {fileID: 1514203076}
+  - component: {fileID: 1514203080}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: MatchCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7068,6 +7133,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1514203080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1514203075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebf5b29e2519f20449b80e98ab04a022, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PTCGPresentation::MatchView
+  _matchController: {fileID: 1444274950}
+  _player1BoardView: {fileID: 4576377789612285989}
+  _player2BoardView: {fileID: 437301915}
 --- !u!1 &1634781353
 GameObject:
   m_ObjectHideFlags: 0
@@ -10010,6 +10090,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2642175622691758881, guid: 7955972b522290b409950c4dbc0a6441, type: 3}
   m_PrefabInstance: {fileID: 4576377789612285982}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4576377789612285989 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3560956971483679025, guid: 7955972b522290b409950c4dbc0a6441, type: 3}
+  m_PrefabInstance: {fileID: 4576377789612285982}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c037f4cc24d7e5d4490631506b2e4df2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PTCGPresentation::PlayerBoardView
 --- !u!1001 &6976420929363330912
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10144,4 +10235,5 @@ SceneRoots:
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 960352675}
+  - {fileID: 1444274951}
   - {fileID: 1514203079}
