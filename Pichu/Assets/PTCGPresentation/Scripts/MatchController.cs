@@ -20,6 +20,7 @@ public class MatchController : MonoBehaviour
     public List<GameEvent> Log { get; private set; } = new();
     public ICardDatabase Db { get; private set; }
     public GameState GameState { get; private set; }
+    public ulong Seed => _seed;
     
     private List<PlayerCommand> _p1LegalCommandCache;
     private List<PlayerCommand> _p2LegalCommandCache;
