@@ -1,4 +1,5 @@
 using TMPro;
+using tylrpage.Pichu.PTCGEngine.CardDatabase;
 using tylrpage.Pichu.PTCGEngine.Core;
 using UnityEngine;
 
@@ -23,10 +24,10 @@ public class CommandButton : MonoBehaviour
                 _text.text = $"End Turn";
                 break;
             case CommandType.PlaceBasic:
-                _text.text = $"Place basic {command.CardId}";
+                _text.text = $"Place {GetCardDisplayName(command.CardId, controller.GameState, controller.Db)}";
                 break;
             case CommandType.ManualAttachEnergy:
-                _text.text = $"Attach energy {command.CardId}->{command.TargetId}";
+                _text.text = $"Attach {GetCardDisplayName(command.CardId, controller.GameState, controller.Db)} to {GetCardDisplayName(command.TargetId, controller.GameState, controller.Db)}";
                 break;
         }
     }
@@ -39,5 +40,15 @@ public class CommandButton : MonoBehaviour
         }
         
         _controller.Apply(_command);
+    }
+    
+    private string GetCardName(int cardId, GameState state, ICardDatabase db)
+    {
+        return db.GetCardDefinition(state.FindCard(cardId).CardDefinitionId).Name;
+    }
+
+    private string GetCardDisplayName(int cardId, GameState state, ICardDatabase db)
+    {
+        return $"{GetCardName(cardId, state, db)} ({cardId})";
     }
 }
