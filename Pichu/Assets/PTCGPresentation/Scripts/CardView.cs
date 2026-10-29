@@ -14,6 +14,13 @@ public class CardView : MonoBehaviour
 
     public void Bind(CardInstance cardInstance, GameState state, ICardDatabase db)
     {
+        // Active could be null during setup
+        gameObject.SetActive(cardInstance != null);
+        if (cardInstance == null)
+        {
+            return;
+        }
+        
         _idText.text = cardInstance.Id.ToString();
         _nameText.text = db.GetCardDefinition(cardInstance.CardDefinitionId).Name;
 
