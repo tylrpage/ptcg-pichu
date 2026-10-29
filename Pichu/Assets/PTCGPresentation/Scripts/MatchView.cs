@@ -33,7 +33,7 @@ public class MatchView : MonoBehaviour
         _player2BoardView.Render(false, _matchController.GameState, _matchController.Db);
         
         _commandList.Render(_matchController.GetLegalCommands(_matchController.GameState.IsPlayer1Turn), _matchController);
-        _gameLog.Render(_matchController.Log);
+        _gameLog.Render(_matchController.Log, _matchController.GameState, _matchController.Db);
         
         _overlay.Render(_matchController.GameState);
     }

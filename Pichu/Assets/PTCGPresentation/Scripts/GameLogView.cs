@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using tylrpage.Pichu.PTCGEngine.CardDatabase;
 using tylrpage.Pichu.PTCGEngine.Core;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class GameLogView : MonoBehaviour
     [SerializeField] private Transform _container;
     [SerializeField] private GameEventView _gameEventViewPrefab;
 
-    public void Render(List<GameEvent> events)
+    public void Render(List<GameEvent> events, GameState state, ICardDatabase db)
     {
         foreach (Transform child in _container)
         {
@@ -20,7 +21,7 @@ public class GameLogView : MonoBehaviour
         for (int i = events.Count - 1; i >= 0; i--)
         {
             GameEvent gameEvent = events[i];
-            Instantiate(_gameEventViewPrefab, _container).Bind(gameEvent);
+            Instantiate(_gameEventViewPrefab, _container).Bind(gameEvent, state, db);
         }
     }
 }
