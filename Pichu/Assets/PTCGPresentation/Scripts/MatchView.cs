@@ -9,6 +9,7 @@ public class MatchView : MonoBehaviour
     [SerializeField] private PlayerBoardView _player2BoardView;
     [SerializeField] private CommandListView _commandList;
     [SerializeField] private GameLogView _gameLog;
+    [SerializeField] private OverlayController _overlay;
 
     private void OnEnable()
     {
@@ -33,5 +34,7 @@ public class MatchView : MonoBehaviour
         
         _commandList.Render(_matchController.GetLegalCommands(_matchController.GameState.IsPlayer1Turn), _matchController);
         _gameLog.Render(_matchController.Log);
+        
+        _overlay.Render(_matchController.GameState);
     }
 }
