@@ -23,6 +23,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
         TargetNotInPlay,
         TargetIsAttached,
         EnergyAlreadyAttachedForTurn,
+        ChoicePending,
+        ChoiceIdMismatch,
+        ChoiceWrongPlayer,
+        InvalidChoiceIds,
+        InvalidChoiceCount,
+        IndistinctChoiceIds,
     }
     
     public static class RuleChecker
@@ -30,6 +36,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
         public static List<PlayerCommand> GetLegalCommands(GameState state, bool isPlayer1, ICardDatabase db)
         {
             List<PlayerCommand> possibleCommands = new();
+            // The UI will use a different function to get legal choose command options
+            if (state.PendingChoice != null)
+            {
+                return possibleCommands;
+            }
+            
             PlayerState player = state.GetPlayer(isPlayer1);
             
             // End turn
@@ -65,14 +77,23 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
                 return RuleResult.GameAlreadyOver;
             }
 
-            if (state.IsPlayer1Turn != command.IsPlayer1)
+            // Choose is the only command that is allowed to come in at any player's turn
+            // b/c we might need input from player 2 on player 1's turn for example
+            if (command.Type != CommandType.Choose && state.IsPlayer1Turn != command.IsPlayer1)
             {
                 return RuleResult.NotYourTurn;
             }
-
-            if (state.Phase != GamePhase.Main)
+            
+            if (state.Phase != GamePhase.Main &&
+                // Allow choose command during setup
+                !(command.Type == CommandType.Choose && state.Phase == GamePhase.Setup))
             {
                 return RuleResult.WrongPhase;
+            }
+
+            if (state.PendingChoice != null && command.Type != CommandType.Choose)
+            {
+                return RuleResult.ChoicePending;
             }
 
             switch (command.Type)
@@ -83,6 +104,8 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
                     return CheckPlaceBasic(state, command, db);
                 case CommandType.ManualAttachEnergy:
                     return CheckAttachEnergy(state, command, db);
+                case CommandType.Choose:
+                    return CheckChoose(state, command, db);
                 case CommandType.EndTurn:
                     return RuleResult.Ok;
                 default:
@@ -176,6 +199,42 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
             if (target.ParentCardInstanceId != 0)
             {
                 return RuleResult.TargetIsAttached;
+            }
+
+            return RuleResult.Ok;
+        }
+
+        private static RuleResult CheckChoose(GameState state, PlayerCommand command, ICardDatabase db)
+        {
+            if (state.PendingChoice == null || state.PendingChoice.Id != command.ChoiceRequestId)
+            {
+                return RuleResult.ChoiceIdMismatch;
+            }
+
+            if (state.PendingChoice.IsPlayer1 != command.IsPlayer1)
+            {
+                return RuleResult.ChoiceWrongPlayer;
+            }
+
+            if (command.ChosenIds == null)
+            {
+                return RuleResult.InvalidChoiceIds; 
+            }
+
+            if (command.ChosenIds.Distinct().Count() != command.ChosenIds.Length)
+            {
+                return RuleResult.IndistinctChoiceIds;
+            }
+
+            if (command.ChosenIds.Any(x => !state.PendingChoice.CandidateIds.Contains(x)))
+            {
+                return RuleResult.InvalidChoiceIds;
+            }
+
+            if (command.ChosenIds.Length > state.PendingChoice.Max ||
+                command.ChosenIds.Length < state.PendingChoice.Min)
+            {
+                return RuleResult.InvalidChoiceCount;
             }
 
             return RuleResult.Ok;

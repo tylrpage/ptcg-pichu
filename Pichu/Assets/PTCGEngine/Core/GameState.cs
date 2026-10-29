@@ -11,6 +11,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core
     {
         public LinkedList<GameStep> StepQueue = new();
         public ChoiceRequest PendingChoice = null;
+        public ChoiceResult LastChoiceResult = null;
         
         public PlayerState Player1State;
         public PlayerState Player2State;
@@ -19,13 +20,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public bool IsPlayer1Turn;
         public GamePhase Phase;
         public TurnFlags Turn;
+        public int NextCardInstanceId;
+        public int NextChoiceRequestId;
         // null means game is still in progress
         public bool? Player1Won;
         public TinyRNG Rng = new();
         public bool EndTurnRequested;
-        
-        private int _nextCardInstanceId;
-        private int _nextChoiceRequestId;
         
         private static readonly JsonSerializerSettings CloneSettings = new()
         {
@@ -118,12 +118,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public int GetNextCardInstanceId()
         {
             // Important that we start at 1, since cards use "0" to mean no card
-            return ++_nextCardInstanceId;
+            return ++NextCardInstanceId;
         }
         
         public int GetNextChoiceRequest()
         {
-            return ++_nextChoiceRequestId;
+            return ++NextChoiceRequestId;
         }
         
         private void RemoveCardFromCurrentLocation(CardInstance card)

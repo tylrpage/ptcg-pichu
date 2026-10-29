@@ -66,9 +66,21 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             }
 
             ResolverContext ctx = CreateContext(state, db);
-            
-            // Turn command into game steps and queue them
-            QueueStepsForCommand(command, ctx);
+
+            if (command.Type == CommandType.Choose)
+            {
+                ctx.WorkingState.PendingChoice = null;
+                ctx.WorkingState.LastChoiceResult = new ChoiceResult()
+                {
+                    Id = command.ChoiceRequestId,
+                    ChosenIds = command.ChosenIds.ToArray(),
+                };
+            }
+            else
+            {
+                // Turn command into game steps and queue them
+                QueueStepsForCommand(command, ctx);   
+            }
 
             return RunToCompletion(ctx);
         }
@@ -89,7 +101,9 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             int iterations = 0;
             while (true)
             {
-                while (ctx.WorkingState.Phase != GamePhase.GameOver && ctx.WorkingState.StepQueue.Count > 0)
+                while (ctx.WorkingState.Phase != GamePhase.GameOver &&
+                       ctx.WorkingState.StepQueue.Count > 0 &&
+                       ctx.WorkingState.PendingChoice == null)
                 {
                     GameStep step = ctx.WorkingState.StepQueue.First.Value;
                     ctx.WorkingState.StepQueue.RemoveFirst();
@@ -105,8 +119,17 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                     iterations++;
                 }
 
-                if (!RunAfterQueueChecks(ctx))
+                // Shouldn't do any win checks until pending choice is made
+                if (ctx.WorkingState.PendingChoice == null)
                 {
+                    if (!RunAfterQueueChecks(ctx))
+                    {
+                        break;
+                    }   
+                }
+                else
+                {
+                    // Pending choice pauses the game loop
                     break;
                 }
             }
@@ -115,6 +138,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             {
                 return CommandResult.GameOver(ctx.WorkingState, ctx.Events);
             }
+
+            if (ctx.WorkingState.PendingChoice != null)
+            {
+                return CommandResult.WaitingForInput(ctx.WorkingState, ctx.Events);
+            }
+            
             return CommandResult.Ok(ctx.WorkingState, ctx.Events);
         }
 

@@ -48,12 +48,13 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             };
         }
 
-        public static CommandResult WaitingForInput(GameState state)
+        public static CommandResult WaitingForInput(GameState state, List<GameEvent> events)
         {
             return new CommandResult()
             {
                 Status = CommandStatus.WaitingForInput,
                 State = state,
+                Events = events,
             };
         }
     }

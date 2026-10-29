@@ -19,7 +19,9 @@ namespace tylrpage.Pichu.PTCGEngine.Core
                    CardId == other.CardId &&
                    TargetId == other.TargetId &&
                    ChoiceRequestId == other.ChoiceRequestId &&
-                   ChosenIds.SequenceEqual(other.ChosenIds);
+                   // Chosen ids needs to both be null or both be SequenceEqual
+                   (ChosenIds == null && other.ChosenIds == null || 
+                    (ChosenIds != null && other.ChosenIds != null && ChosenIds.SequenceEqual(other.ChosenIds)));
         }
 
         public override bool Equals(object obj)
@@ -72,11 +74,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core
             };
         }
 
-        public static PlayerCommand Choose(int choiceRequestId, int[] chosenIds)
+        public static PlayerCommand Choose(bool p1, int choiceRequestId, int[] chosenIds)
         {
             return new PlayerCommand()
             {
                 Type = CommandType.Choose,
+                IsPlayer1 = p1,
                 ChoiceRequestId = choiceRequestId,
                 ChosenIds = chosenIds,
             };
