@@ -12,7 +12,6 @@ public class MatchHUDView : MonoBehaviour
     {
         _turnAndPlayerText.text = $"Turn: {state.TurnNumber}, Player {(state.IsPlayer1Turn ? 1 : 2)}";
         
-        byte[] bytes = BitConverter.GetBytes(seed);
-        _phaseAndSeedText.text = $"Phase: {state.Phase}, Seed: {Convert.ToBase64String(bytes)}";
+        _phaseAndSeedText.text = $"Phase: {state.Phase}, Seed: {seed}";
     }
 }
