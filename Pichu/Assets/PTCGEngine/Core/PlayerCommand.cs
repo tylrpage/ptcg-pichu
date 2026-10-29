@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace tylrpage.Pichu.PTCGEngine.Core
 {
@@ -8,10 +9,17 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public bool IsPlayer1;
         public int CardId;
         public int TargetId;
+        public int ChoiceRequestId;
+        public int[] ChosenIds;
         
         public bool Equals(PlayerCommand other)
         {
-            return Type == other.Type && IsPlayer1 == other.IsPlayer1 && CardId == other.CardId && TargetId == other.TargetId;
+            return Type == other.Type &&
+                   IsPlayer1 == other.IsPlayer1 &&
+                   CardId == other.CardId &&
+                   TargetId == other.TargetId &&
+                   ChoiceRequestId == other.ChoiceRequestId &&
+                   ChosenIds.SequenceEqual(other.ChosenIds);
         }
 
         public override bool Equals(object obj)
@@ -61,6 +69,16 @@ namespace tylrpage.Pichu.PTCGEngine.Core
             {
                 Type = CommandType.EndTurn,
                 IsPlayer1 = p1,
+            };
+        }
+
+        public static PlayerCommand Choose(int choiceRequestId, int[] chosenIds)
+        {
+            return new PlayerCommand()
+            {
+                Type = CommandType.Choose,
+                ChoiceRequestId = choiceRequestId,
+                ChosenIds = chosenIds,
             };
         }
     }

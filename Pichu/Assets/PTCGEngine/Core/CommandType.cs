@@ -6,5 +6,6 @@
         PlaceBasic = 1,
         ManualAttachEnergy = 2,
         EndTurn = 3,
+        Choose = 4,
     }
 }

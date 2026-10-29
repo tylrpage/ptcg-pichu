@@ -25,11 +25,11 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             for (int i = 0; i < 2; i++)
             {
                 bool isPlayer1 = i == 0 ? true : false;
-                ctx.Queue.AddLast(new ShuffleDeckStep()
+                ctx.WorkingState.StepQueue.AddLast(new ShuffleDeckStep()
                 {
                     IsPlayer1 = isPlayer1,
                 });
-                ctx.Queue.AddLast(new DrawStep()
+                ctx.WorkingState.StepQueue.AddLast(new DrawStep()
                 {
                     IsPlayer1 = isPlayer1,
                     IsTurnDraw = false,
@@ -37,13 +37,13 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 });
                 
                 // Put the first basic in active
-                ctx.Queue.AddLast(new AutoPlaceStartingActiveStep()
+                ctx.WorkingState.StepQueue.AddLast(new AutoPlaceStartingActiveStep()
                 {
                     IsPlayer1 = isPlayer1,
                 });
                 
                 // Setup prize cards
-                ctx.Queue.AddLast(new SetPrizesStep()
+                ctx.WorkingState.StepQueue.AddLast(new SetPrizesStep()
                 {
                     IsPlayer1 = isPlayer1,
                 });
@@ -51,8 +51,8 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             
             // Get the game started
             // todo: flip and stuff for who goes first
-            ctx.Queue.AddLast(new EndSetupStep() { });
-            ctx.Queue.AddLast(new StartTurnStep() { IsPlayer1 = true });
+            ctx.WorkingState.StepQueue.AddLast(new EndSetupStep() { });
+            ctx.WorkingState.StepQueue.AddLast(new StartTurnStep() { IsPlayer1 = true });
 
             return RunToCompletion(ctx);
         }
@@ -79,7 +79,6 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             {
                 WorkingState = state.Clone(),
                 CardDatabase = db,
-                Queue = new(),
                 Events = new(),
             };
         }
@@ -90,10 +89,10 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             int iterations = 0;
             while (true)
             {
-                while (ctx.WorkingState.Phase != GamePhase.GameOver && ctx.Queue.Count > 0)
+                while (ctx.WorkingState.Phase != GamePhase.GameOver && ctx.WorkingState.StepQueue.Count > 0)
                 {
-                    GameStep step = ctx.Queue.First.Value;
-                    ctx.Queue.RemoveFirst();
+                    GameStep step = ctx.WorkingState.StepQueue.First.Value;
+                    ctx.WorkingState.StepQueue.RemoveFirst();
                 
                     // Iteration stop gap
                     if (iterations >= 1000)

@@ -11,6 +11,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             Ok,
             Rejected,
             GameOver,
+            WaitingForInput,
         }
         public CommandStatus Status;
         public GameState State;
@@ -44,6 +45,15 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 Status = CommandStatus.GameOver,
                 State = state,
                 Events = events,
+            };
+        }
+
+        public static CommandResult WaitingForInput(GameState state)
+        {
+            return new CommandResult()
+            {
+                Status = CommandStatus.WaitingForInput,
+                State = state,
             };
         }
     }

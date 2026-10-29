@@ -1,16 +1,20 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using tylrpage.Pichu.PTCGEngine.Core.Resolution;
+using tylrpage.Pichu.PTCGEngine.Core.Serialization;
 using tylrpage.Pichu.PTCGEngine.Random;
 
 namespace tylrpage.Pichu.PTCGEngine.Core
 {
     public class GameState
     {
+        public LinkedList<GameStep> StepQueue = new();
+        public ChoiceRequest PendingChoice = null;
+        
         public PlayerState Player1State;
         public PlayerState Player2State;
         public CardInstance Stadium;
-        public int NextCardInstanceId;
         public int TurnNumber;
         public bool IsPlayer1Turn;
         public GamePhase Phase;
@@ -20,10 +24,16 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public TinyRNG Rng = new();
         public bool EndTurnRequested;
         
+        private int _nextCardInstanceId;
+        private int _nextChoiceRequestId;
+        
         private static readonly JsonSerializerSettings CloneSettings = new()
         {
             // Creates fresh lists for fields, for lists that are pre-filled at init
             ObjectCreationHandling = ObjectCreationHandling.Replace,
+            // Serialize types for GameStep queue
+            TypeNameHandling = TypeNameHandling.Auto,
+            SerializationBinder = new EngineTypeBinder(),
         };
 
         public IEnumerable<CardInstance> GetAllCards()
@@ -108,7 +118,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public int GetNextCardInstanceId()
         {
             // Important that we start at 1, since cards use "0" to mean no card
-            return ++NextCardInstanceId;
+            return ++_nextCardInstanceId;
+        }
+        
+        public int GetNextChoiceRequest()
+        {
+            return ++_nextChoiceRequestId;
         }
         
         private void RemoveCardFromCurrentLocation(CardInstance card)

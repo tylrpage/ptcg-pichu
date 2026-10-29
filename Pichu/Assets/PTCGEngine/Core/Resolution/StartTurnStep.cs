@@ -16,7 +16,7 @@
                 TurnNumber = ctx.WorkingState.TurnNumber,
             });
             
-            ctx.Queue.AddFirst(new DrawStep()
+            ctx.QueueNext(new DrawStep()
             {
                 IsPlayer1 = ctx.WorkingState.IsPlayer1Turn,
                 IsTurnDraw = true,
