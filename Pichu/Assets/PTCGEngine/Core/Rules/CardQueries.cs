@@ -45,5 +45,10 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
             int maxHP = GetMaxHP(card, state, db);
             return maxHP - (card.DamageCounters * 10);
         }
+
+        public static bool IsFirstTurnOfPlayerGoingFirst(GameState state)
+        {
+            return state.TurnNumber == 1;
+        }
     }
 }

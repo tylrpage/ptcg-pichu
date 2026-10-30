@@ -26,6 +26,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public bool? Player1Won;
         public TinyRNG Rng = new();
         public bool EndTurnRequested;
+        public bool Player1GoesFirst;
         
         private static readonly JsonSerializerSettings CloneSettings = new()
         {

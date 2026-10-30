@@ -8,7 +8,6 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 {
     public static class Resolver
     {
-        // todo: temp game setup, replace later with proper setup
         public static CommandResult StartGame(GameState state, ulong seed, ICardDatabase db)
         {
             if (state.Phase != GamePhase.Setup || state.TurnNumber != 0)
@@ -20,39 +19,15 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             
             // Setup rng
             ctx.WorkingState.Rng = new TinyRNG(seed);
-            
-            // Shuffle decks and draw
-            for (int i = 0; i < 2; i++)
-            {
-                bool isPlayer1 = i == 0 ? true : false;
-                ctx.WorkingState.StepQueue.AddLast(new ShuffleDeckStep()
-                {
-                    IsPlayer1 = isPlayer1,
-                });
-                ctx.WorkingState.StepQueue.AddLast(new DrawStep()
-                {
-                    IsPlayer1 = isPlayer1,
-                    IsTurnDraw = false,
-                    Number = CardQueries.StartingHandSize,
-                });
-                
-                // Put the first basic in active
-                ctx.WorkingState.StepQueue.AddLast(new AutoPlaceStartingActiveStep()
-                {
-                    IsPlayer1 = isPlayer1,
-                });
-                
-                // Setup prize cards
-                ctx.WorkingState.StepQueue.AddLast(new SetPrizesStep()
-                {
-                    IsPlayer1 = isPlayer1,
-                });
-            }
-            
-            // Get the game started
-            // todo: flip and stuff for who goes first
-            ctx.WorkingState.StepQueue.AddLast(new EndSetupStep() { });
-            ctx.WorkingState.StepQueue.AddLast(new StartTurnStep() { IsPlayer1 = true });
+
+            ctx.QueueNext(new GameSetupStep(),
+                // todo: let players bench basics before game starts
+                new SetPrizesStep() { IsPlayer1 = true },
+                new SetPrizesStep() { IsPlayer1 = false },
+                new DrawMulliganStep() { IsPlayer1 = true },
+                new DrawMulliganStep() { IsPlayer1 = false },
+                new EndSetupStep(),
+                new StartFirstTurnStep());
 
             return RunToCompletion(ctx);
         }

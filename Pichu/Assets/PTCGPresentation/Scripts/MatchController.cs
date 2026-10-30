@@ -32,7 +32,7 @@ public class MatchController : MonoBehaviour
         GameState state = GameStateFactory.Create(Db, deckList, deckList);
         CommandResult result = Resolver.StartGame(state, _seed, Db);
 
-        if (result.Status != CommandResult.CommandStatus.Ok)
+        if (result.Status == CommandResult.CommandStatus.Rejected)
         {
             Debug.LogError($"Could not start game, status: {result.Status}, reason: {result.RejectReason}");
             return;

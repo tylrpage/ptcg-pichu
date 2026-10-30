@@ -13,7 +13,6 @@ public class CommandListView : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-
         foreach (PlayerCommand command in commands)
         {
             Instantiate(_commandButtonPrefab, _container).Bind(command, controller);

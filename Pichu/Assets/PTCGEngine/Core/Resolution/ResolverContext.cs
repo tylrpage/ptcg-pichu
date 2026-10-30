@@ -18,5 +18,13 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 WorkingState.StepQueue.AddFirst(steps[i]);
             }
         }
+
+        public void QueueNext(List<GameStep> steps)
+        {
+            for (int i = steps.Count - 1; i >= 0; i--)
+            {
+                WorkingState.StepQueue.AddFirst(steps[i]);
+            }
+        }
     }
 }
