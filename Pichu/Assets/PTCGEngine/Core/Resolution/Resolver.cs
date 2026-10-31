@@ -44,12 +44,28 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 
             if (command.Type == CommandType.Choose)
             {
-                ctx.WorkingState.PendingChoice = null;
-                ctx.WorkingState.LastChoiceResult = new ChoiceResult()
+                if (ctx.WorkingState.PendingChoice == null)
                 {
-                    Id = command.ChoiceRequestId,
-                    ChosenIds = command.ChosenIds.ToArray(),
-                };
+                    throw new InvalidOperationException($"Received choose command but there is no pending choice");
+                }
+                
+                if (ctx.WorkingState.PendingChoice.Id != command.ChoiceRequestId)
+                {
+                    throw new ArgumentException($"Received choose command but request and choose id don't match");
+                }
+                
+                // Check that next step is an apply choice step
+                if (ctx.WorkingState.StepQueue.Count == 0 ||
+                    ctx.WorkingState.StepQueue.First.Value is not ApplyChoiceStep applyChoiceStep)
+                {
+                    throw new InvalidOperationException(
+                        $"Received choose command but next step isn't expecting choice, next step: {ctx.WorkingState.StepQueue.First.Value.GetType()}");
+                }
+
+                applyChoiceStep.ChoiceId = command.ChoiceRequestId;
+                applyChoiceStep.ChosenIds = command.ChosenIds.ToArray();
+
+                ctx.WorkingState.PendingChoice = null;
             }
             else
             {

@@ -11,7 +11,6 @@ namespace tylrpage.Pichu.PTCGEngine.Core
     {
         public LinkedList<GameStep> StepQueue = new();
         public ChoiceRequest PendingChoice = null;
-        public ChoiceResult LastChoiceResult = null;
         
         public PlayerState Player1State;
         public PlayerState Player2State;
@@ -107,6 +106,11 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public PlayerState GetPlayer(bool isPlayer1)
         {
             return isPlayer1 ? Player1State : Player2State;
+        }
+
+        public PlayerState GetCurrentTurnPlayer()
+        {
+            return GetPlayer(IsPlayer1Turn);
         }
         
         public GameState Clone()
