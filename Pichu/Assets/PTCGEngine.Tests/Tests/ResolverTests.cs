@@ -22,6 +22,16 @@ namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
             _state = GameStateFactory.Create(_db, TestCards.Deck(40, 20), TestCards.Deck(40, 20));
         }
 
+        private CommandResult ChooseActives(GameState state)
+        {
+            GameState newState = Resolver.Submit(state,
+                PlayerCommand.Choose(true, state.PendingChoice.Id, new[] { state.PendingChoice.CandidateIds[0] }),
+                _db).State;
+            return Resolver.Submit(newState,
+                PlayerCommand.Choose(false, newState.PendingChoice.Id, new[] { newState.PendingChoice.CandidateIds[0] }),
+                _db);
+        }
+
         private void AssertGameStateEquality(GameState a, GameState b)
         {
             Assert.That(JsonConvert.SerializeObject(a), Is.EqualTo(JsonConvert.SerializeObject(b)));
@@ -31,34 +41,37 @@ namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
         public void Setup_Successful()
         {
             CommandResult result = Resolver.StartGame(_state, 0, _db);
-            Assert.That(result.Status, Is.EqualTo(CommandResult.CommandStatus.Ok));
+            CommandResult chooseActivesResult = ChooseActives(result.State);
+            Assert.That(chooseActivesResult.Status, Is.EqualTo(CommandResult.CommandStatus.Ok));
         }
 
         [Test]
         public void Resolve_UnchangedStateAfterRejection()
         {
             CommandResult setupResult = Resolver.StartGame(_state, 0, _db);
+            GameState state = ChooseActives(setupResult.State).State;
             
             // No card has the id 0, so this command should never work
-            PlayerCommand invalidCommand = PlayerCommand.PlaceBasic(true, 0);
-            CommandResult result = Resolver.Submit(setupResult.State, invalidCommand, _db);
+            PlayerCommand invalidCommand = PlayerCommand.PlaceBasic(state.IsPlayer1Turn, 0);
+            CommandResult result = Resolver.Submit(state, invalidCommand, _db);
 
             Assert.That(result.RejectReason, Is.EqualTo(RuleResult.CardNotFound));
             // Check that an invalid command left the state the same
-            AssertGameStateEquality(setupResult.State, result.State);
+            AssertGameStateEquality(state, result.State);
         }
 
         [Test]
         public void Resolve_InputStateUnchanged()
         {
             CommandResult setupResult = Resolver.StartGame(_state, 0, _db);
+            GameState state = ChooseActives(setupResult.State).State;
             
-            PlayerCommand endTurn = PlayerCommand.EndTurn(true);
-            GameState inputState = setupResult.State.Clone();
-            CommandResult result = Resolver.Submit(setupResult.State, endTurn, _db);
+            PlayerCommand endTurn = PlayerCommand.EndTurn(state.IsPlayer1Turn);
+            GameState inputState = state.Clone();
+            CommandResult result = Resolver.Submit(state, endTurn, _db);
             
             Assert.That(result.Status, Is.EqualTo(CommandResult.CommandStatus.Ok));
-            AssertGameStateEquality(inputState, setupResult.State);
+            AssertGameStateEquality(inputState, state);
         }
 
         [Test]
@@ -75,6 +88,7 @@ namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
         {
             CommandResult setupResult = Resolver.StartGame(_state, 0, _db);
             GameState state = setupResult.State;
+            state = ChooseActives(state).State;
             TinyRNG rng = new TinyRNG(0);
 
             int maxTurns = 5000;
@@ -106,42 +120,49 @@ namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
         public void Command_CanAttachToActive()
         {
             GameState state = Resolver.StartGame(_state, seed: 0, _db).State;
-            CardInstance energy = state.Player1State.Hand.First(c => c.CardDefinitionId == TestCards.GrassId);
-            int myActive = state.Player1State.Active.Id;
+            state = ChooseActives(state).State;
+            PlayerState player = state.GetCurrentTurnPlayer();
+            CardInstance energy = player.Hand.First(c => c.CardDefinitionId == TestCards.GrassId);
+            int myActive = player.Active.Id;
 
-            CommandResult result = Resolver.Submit(state, PlayerCommand.AttachEnergy(true, energy.Id, myActive), _db);
+            CommandResult result = Resolver.Submit(state, PlayerCommand.AttachEnergy(state.IsPlayer1Turn, energy.Id, myActive), _db);
             Assert.That(result.Status, Is.EqualTo(CommandResult.CommandStatus.Ok));
-            Assert.That(result.State.Player1State.Active.AttachedEnergy[0].Id, Is.EqualTo(energy.Id));
+            Assert.That(result.State.GetCurrentTurnPlayer().Active.AttachedEnergy[0].Id, Is.EqualTo(energy.Id));
         }
         
         [Test]
         public void Command_CannotAttachToOpponent()
         {
             GameState state = Resolver.StartGame(_state, seed: 0, _db).State;
-            CardInstance energy = state.Player1State.Hand.First(c => c.CardDefinitionId == TestCards.GrassId);
-            int opponentActive = state.Player2State.Active.Id;
+            state = ChooseActives(state).State;
+            PlayerState player = state.GetCurrentTurnPlayer();
+            PlayerState oppPlayer = state.GetPlayer(!state.IsPlayer1Turn);
+            CardInstance energy = player.Hand.First(c => c.CardDefinitionId == TestCards.GrassId);
+            int opponentActive = oppPlayer.Active.Id;
 
-            CommandResult result = Resolver.Submit(state, PlayerCommand.AttachEnergy(true, energy.Id, opponentActive), _db);
+            CommandResult result = Resolver.Submit(state, PlayerCommand.AttachEnergy(state.IsPlayer1Turn, energy.Id, opponentActive), _db);
             Assert.That(result.RejectReason, Is.EqualTo(RuleResult.TargetNotOwned));
-            Assert.That(result.State.Player2State.Active.AttachedEnergy.Count, Is.EqualTo(0));
+            Assert.That(oppPlayer.Active.AttachedEnergy.Count, Is.EqualTo(0));
         }
         
         [Test]
         public void Command_CannotAttachEnergyTwice()
         {
             GameState state = Resolver.StartGame(_state, seed: 0, _db).State;
-            List<CardInstance> energies = state.Player1State.Hand.Where(c => c.CardDefinitionId == TestCards.GrassId)
+            state = ChooseActives(state).State;
+            PlayerState player = state.GetCurrentTurnPlayer();
+            List<CardInstance> energies = player.Hand.Where(c => c.CardDefinitionId == TestCards.GrassId)
                 .ToList();
-            int myActive = state.Player1State.Active.Id;
+            int myActive = player.Active.Id;
             
             Assert.That(energies.Count, Is.GreaterThanOrEqualTo(2));
 
-            CommandResult result = Resolver.Submit(state, PlayerCommand.AttachEnergy(true, energies[0].Id, myActive), _db);
+            CommandResult result = Resolver.Submit(state, PlayerCommand.AttachEnergy(state.IsPlayer1Turn, energies[0].Id, myActive), _db);
             Assert.That(result.Status, Is.EqualTo(CommandResult.CommandStatus.Ok));
             state = result.State;
             
             // Try attaching again
-            result = Resolver.Submit(state, PlayerCommand.AttachEnergy(true, energies[1].Id, myActive), _db);
+            result = Resolver.Submit(state, PlayerCommand.AttachEnergy(state.IsPlayer1Turn, energies[1].Id, myActive), _db);
             Assert.That(result.RejectReason, Is.EqualTo(RuleResult.EnergyAlreadyAttachedForTurn));
         }
         
@@ -149,9 +170,11 @@ namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
         public void Command_CannotBenchEnergy()
         {
             GameState state = Resolver.StartGame(_state, seed: 0, _db).State;
-            CardInstance energy = state.Player1State.Hand.First(c => c.CardDefinitionId == TestCards.GrassId);
+            state = ChooseActives(state).State;
+            PlayerState player = state.GetCurrentTurnPlayer();
+            CardInstance energy = player.Hand.First(c => c.CardDefinitionId == TestCards.GrassId);
 
-            CommandResult result = Resolver.Submit(state, PlayerCommand.PlaceBasic(true, energy.Id), _db);
+            CommandResult result = Resolver.Submit(state, PlayerCommand.PlaceBasic(state.IsPlayer1Turn, energy.Id), _db);
             Assert.That(result.RejectReason, Is.EqualTo(RuleResult.NotBasicPokemon));
         }
         
@@ -159,10 +182,12 @@ namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
         public void Command_CannotAttachDuringOpponentsTurn()
         {
             GameState state = Resolver.StartGame(_state, seed: 0, _db).State;
-            CardInstance energy = state.Player1State.Hand.First(c => c.CardDefinitionId == TestCards.GrassId);
-            int myActive = state.Player1State.Active.Id;
+            state = ChooseActives(state).State;
+            PlayerState player = state.GetCurrentTurnPlayer();
+            CardInstance energy = player.Hand.First(c => c.CardDefinitionId == TestCards.GrassId);
+            int myActive = player.Active.Id;
 
-            CommandResult result = Resolver.Submit(state, PlayerCommand.AttachEnergy(false, energy.Id, myActive), _db);
+            CommandResult result = Resolver.Submit(state, PlayerCommand.AttachEnergy(!state.IsPlayer1Turn, energy.Id, myActive), _db);
             Assert.That(result.RejectReason, Is.EqualTo(RuleResult.NotYourTurn));
         }
     }
