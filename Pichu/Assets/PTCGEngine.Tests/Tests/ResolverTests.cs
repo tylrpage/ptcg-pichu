@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -36,13 +37,44 @@ namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
         {
             Assert.That(JsonConvert.SerializeObject(a), Is.EqualTo(JsonConvert.SerializeObject(b)));
         }
+        
+        [Test]
+        public void Setup_WaitsForInput()
+        {
+            CommandResult result = Resolver.StartGame(_state, 0, _db);
+            Assert.That(result.Status, Is.EqualTo(CommandResult.CommandStatus.WaitingForInput));
+        }
+        
+        [Test]
+        public void Setup_WaitsForInputAfterChoosingOneActive()
+        {
+            CommandResult result = Resolver.StartGame(_state, 0, _db);
+            CommandResult chooseResult = Resolver.Submit(result.State,
+                PlayerCommand.Choose(true, result.State.PendingChoice.Id, new[] { result.State.PendingChoice.CandidateIds[0] }),
+                _db);
+            
+            Assert.That(chooseResult.Status, Is.EqualTo(CommandResult.CommandStatus.WaitingForInput));
+        }
 
         [Test]
-        public void Setup_Successful()
+        public void Setup_SuccessfulAfterChoosingActives()
         {
             CommandResult result = Resolver.StartGame(_state, 0, _db);
             CommandResult chooseActivesResult = ChooseActives(result.State);
+            
             Assert.That(chooseActivesResult.Status, Is.EqualTo(CommandResult.CommandStatus.Ok));
+            Assert.That(chooseActivesResult.State.Phase, Is.EqualTo(GamePhase.Main));
+        }
+
+        [Test]
+        public void Setup_Mulligans()
+        {
+            GameState mulliganState = GameStateFactory.Create(_db, TestCards.Deck(1, 59), TestCards.Deck(1, 59));
+            CommandResult result = Resolver.StartGame(mulliganState, 3, _db);
+            
+            Assert.That(result.State.Player1State.MulliganCount, Is.GreaterThan(0));
+            // Should have a basic after the mulligan redraws
+            Assert.That(result.State.Player1State.Hand.Any(x => CardQueries.IsBasicPokemon(x, result.State, _db)), Is.True);
         }
 
         [Test]
@@ -189,6 +221,24 @@ namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
 
             CommandResult result = Resolver.Submit(state, PlayerCommand.AttachEnergy(!state.IsPlayer1Turn, energy.Id, myActive), _db);
             Assert.That(result.RejectReason, Is.EqualTo(RuleResult.NotYourTurn));
+        }
+
+        [Test]
+        public void Create_RejectsDeckWithNoBasics()
+        {
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => 
+                GameStateFactory.Create(_db, TestCards.Deck(0, 20), TestCards.Deck(0, 20)));
+            Assert.That(exception, Is.Not.Null);
+        }
+        
+        [Test]
+        public void Resolver_CloneStaysPaused()
+        {
+            GameState state = Resolver.StartGame(_state, seed: 0, _db).State;
+            GameState answeredState = ChooseActives(state.Clone()).State;
+            
+            Assert.That(answeredState.PendingChoice, Is.Null);
+            Assert.That(state.PendingChoice, Is.Not.Null);
         }
     }
 }
