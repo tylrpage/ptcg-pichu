@@ -4,7 +4,7 @@ using tylrpage.Pichu.PTCGEngine.Core.Rules;
 
 namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 {
-    // Draws hand until there is a basic
+    // Mulligans if there are no basics in hand
     public class SetupCheckForMulligan : GameStep
     {
         public bool IsPlayer1;
@@ -36,7 +36,10 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 }
                 
                 // Draw a new hand
-                steps.Add(new SetupDrawHandStep());
+                steps.Add(new SetupDrawHandStep()
+                {
+                    IsPlayer1 = IsPlayer1,
+                });
             }
             
             ctx.QueueNext(steps);

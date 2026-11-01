@@ -13,7 +13,7 @@ public class ChoiceSelectionView : MonoBehaviour
     [SerializeField] private Transform _choicesContainer;
     [SerializeField] private Button _submitButton;
 
-    private HashSet<int> _selectedCardIds = new();
+    private List<int> _selectedCardIds = new();
     private PlayerCommand _chooseCommand;
     private bool _isPlayer1;
     private int _choiceRequestId;

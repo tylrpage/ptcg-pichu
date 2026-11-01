@@ -62,7 +62,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                         $"Received choose command but next step isn't expecting choice, next step: {ctx.WorkingState.StepQueue.First.Value.GetType()}");
                 }
 
-                applyChoiceStep.ChoiceId = command.ChoiceRequestId;
+                if (applyChoiceStep.ChoiceId != command.ChoiceRequestId)
+                {
+                    throw new InvalidOperationException(
+                        $"Apply choice step was not expecting the choice command id. Expected: {applyChoiceStep.ChoiceId}, got: {command.ChoiceRequestId}");
+                }
+
                 applyChoiceStep.ChosenIds = command.ChosenIds.ToArray();
 
                 ctx.WorkingState.PendingChoice = null;

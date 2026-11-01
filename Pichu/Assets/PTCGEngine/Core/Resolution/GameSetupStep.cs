@@ -17,8 +17,6 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 IsPlayer1First = isPlayer1First,
             });
 
-            List<GameStep> steps = new();
-
             // Shuffle and draw hands for each player until they have basic
             ctx.QueueNext(new SetupDrawHandStep()
             {

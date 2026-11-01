@@ -1,7 +1,7 @@
 ﻿namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 {
     // Base class for steps that process a choice
-    public class ApplyChoiceStep : GameStep
+    public abstract class ApplyChoiceStep : GameStep
     {
         public int ChoiceId;
         // public ChoiceRequest Request;
