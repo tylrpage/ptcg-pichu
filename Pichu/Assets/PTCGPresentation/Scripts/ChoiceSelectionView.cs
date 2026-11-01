@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using tylrpage.Pichu.PTCGEngine.CardDatabase;
 using tylrpage.Pichu.PTCGEngine.Core;
 using tylrpage.Pichu.PTCGEngine.Core.Rules;
@@ -12,6 +13,7 @@ public class ChoiceSelectionView : MonoBehaviour
     [SerializeField] private ChoiceView _choicePrefab;
     [SerializeField] private Transform _choicesContainer;
     [SerializeField] private Button _submitButton;
+    [SerializeField] private TMP_Text _labelText;
 
     private List<int> _selectedCardIds = new();
     private PlayerCommand _chooseCommand;
@@ -28,14 +30,19 @@ public class ChoiceSelectionView : MonoBehaviour
             gameObject.SetActive(false);
             return;
         }
+        gameObject.SetActive(true);
 
         _matchController = matchController;
         _state = _matchController.GameState;
         _db = _matchController.Db;
         _isPlayer1 = matchController.GameState.PendingChoice.IsPlayer1;
         _choiceRequestId = matchController.GameState.PendingChoice.Id;
-        
-        gameObject.SetActive(true);
+
+        int min = matchController.GameState.PendingChoice.Min;
+        int max = matchController.GameState.PendingChoice.Max;
+        string pickString = min == max ? $"{min}" : $"{min}-{max}";
+        _labelText.text =
+            $"Choose: {matchController.GameState.PendingChoice.Prompt}. Pick: {pickString}";
 
         _selectedCardIds.Clear();
         foreach (Transform child in _choicesContainer)
