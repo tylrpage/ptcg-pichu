@@ -11,6 +11,7 @@ namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
         public const string TreeckoId = "test_001";
         public const string MudkipId = "test_002";
         public const string GrassId = "test_energy_g";
+        public const string WaterId = "test_energy_w";
 
         public static InMemoryCardDatabase CreateDatabase()
         { 
@@ -20,17 +21,28 @@ namespace tylrpage.Pichu.PTCGEngine.Tests.Tests
                 CardDefinitionId = TreeckoId,
                 Name = "Treecko",
                 Format = CardFormat.Pokemon,
+                HP = 100,
+                Weakness = Element.Fire,
+                Resistance = Element.Grass,
             });
             db.AddDefinition(new CardDefinition()
             {
                 CardDefinitionId = MudkipId,
                 Name = "Mudkip",
                 Format = CardFormat.Pokemon,
+                HP = 100,
+                Weakness = Element.Grass,
             });
             db.AddDefinition(new CardDefinition()
             {
                 CardDefinitionId = GrassId,
                 Name = "Grass Energy",
+                Format = CardFormat.Energy,
+            });
+            db.AddDefinition(new CardDefinition()
+            {
+                CardDefinitionId = WaterId,
+                Name = "Water Energy",
                 Format = CardFormat.Energy,
             });
 

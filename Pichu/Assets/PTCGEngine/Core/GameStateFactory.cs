@@ -41,6 +41,45 @@ namespace tylrpage.Pichu.PTCGEngine.Core
             return gameState;
         }
 
+        public struct BattleState
+        {
+            public string ActiveId;
+            public List<string> BenchId;
+            public List<string> ActiveEnergyIds;
+            public int ActiveDamageCounters;
+        }
+        // Should only be used for testing purposes, not real games
+        public static GameState SetupTestBattle(ICardDatabase db, BattleState player1, BattleState player2)
+        {
+            List<string> fillerDeck = Enumerable.Repeat(player1.ActiveId, 60).ToList();
+            GameState state = Create(db, fillerDeck, fillerDeck);
+
+            for (int i = 0; i < 1; i++)
+            {
+                bool isPlayer1 = i == 0;
+                BattleState battleState = isPlayer1 ? player1 : player2;
+                PlayerState player = state.GetPlayer(isPlayer1);
+                
+                CardInstance active = CreateCardInstance(state, db, battleState.ActiveId, isPlayer1);
+                active.DamageCounters = battleState.ActiveDamageCounters;
+                Board.AddCardInstanceToZone(state, active, player, Zone.Active);
+
+                foreach (string energyId in battleState.ActiveEnergyIds)
+                {
+                    CardInstance energy = CreateCardInstance(state, db, energyId, isPlayer1);
+                    state.AttachEnergy(energy, active);
+                }
+
+                foreach (string benchId in battleState.BenchId)
+                {
+                    CardInstance card = CreateCardInstance(state, db, benchId, isPlayer1);
+                    Board.AddCardInstanceToZone(state, card, player, Zone.Bench);
+                }
+            }
+            
+            return state;
+        }
+
         private static CardInstance CreateCardInstance(GameState gameState, ICardDatabase db, string cardDefinitionId, bool isOwnedByPlayer1)
         {
             if (!db.TryGetCardDefinition(cardDefinitionId, out CardDefinition cardDefinition))
