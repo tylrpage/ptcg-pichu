@@ -12,12 +12,20 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public int RetreatCost;
         public Element? Weakness;
         public Element? Resistance;
+        public int PrizeValue = 1;
 
         public Element Type;
 
         public PokemonStage Stage;
         public CardFormat Format;
-        // public List<Action> Attacks = new();
+        public List<Attack> Attacks = new();
         // public List<Action> Abilities = new();
-    }   
+    }
+
+    public class Attack
+    {
+        public string Name;
+        public List<Element> Cost;
+        public int Damage;
+    }
 }

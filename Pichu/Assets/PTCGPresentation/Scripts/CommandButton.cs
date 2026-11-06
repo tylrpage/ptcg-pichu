@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using TMPro;
 using tylrpage.Pichu.PTCGEngine.CardDatabase;
 using tylrpage.Pichu.PTCGEngine.Core;
+using tylrpage.Pichu.PTCGEngine.Core.Rules;
 using UnityEngine;
 
 public class CommandButton : MonoBehaviour
@@ -28,6 +30,16 @@ public class CommandButton : MonoBehaviour
                 break;
             case CommandType.ManualAttachEnergy:
                 _text.text = $"Attach {GetCardDisplayName(command.CardId, controller.GameState, controller.Db)} to {GetCardDisplayName(command.TargetId, controller.GameState, controller.Db)}";
+                break;
+            case CommandType.Attack:
+                CardInstance attacker = controller.GameState.FindCard(command.CardId);
+                List<Attack> attacks = CardQueries.GetAttacks(attacker, controller.GameState, controller.Db);
+                Attack attack = attacks[command.ActionIndex];
+                _text.text = $"Attack: [{attack.Name}]";
+                break;
+            default:
+                _text.text = $"UNKNOWN [{command.Type}]";
+                Debug.LogError($"Received unknown legal command: {command.Type}");
                 break;
         }
     }

@@ -7,5 +7,6 @@
         ManualAttachEnergy = 2,
         EndTurn = 3,
         Choose = 4,
+        Attack = 5,
     }
 }

@@ -1,4 +1,6 @@
-﻿using tylrpage.Pichu.PTCGEngine.CardDatabase;
+﻿using System.Collections.Generic;
+using System.Linq;
+using tylrpage.Pichu.PTCGEngine.CardDatabase;
 
 namespace tylrpage.Pichu.PTCGEngine.Core.Rules
 {
@@ -49,6 +51,51 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
         public static bool IsFirstTurnOfPlayerGoingFirst(GameState state)
         {
             return state.TurnNumber == 1;
+        }
+
+        // Only supports simple, single type energy for now
+        public static Element GetProvidedEnergy(CardInstance energy, ICardDatabase db)
+        {
+            CardDefinition cardDefinition = db.GetCardDefinition(energy.CardDefinitionId);
+
+            return cardDefinition.Type;
+        }
+        
+        // Only supports simple, single type energy for now
+        public static bool CanPayCost(List<Element> costs, CardInstance pokemon, GameState state, ICardDatabase db)
+        {
+            Dictionary<Element, int> energyCounts = new();
+            foreach (CardInstance energy in pokemon.AttachedEnergy)
+            {
+                Element element = GetProvidedEnergy(energy, db);
+                energyCounts.TryAdd(element, 0);
+                energyCounts[element]++;
+            }
+
+            int colorlessNeeded = 0;
+            foreach (Element cost in costs)
+            {
+                if (cost == Element.Colorless)
+                {
+                    colorlessNeeded++;
+                }
+                else
+                {
+                    if (energyCounts.GetValueOrDefault(cost) == 0)
+                    {
+                        return false;
+                    }
+                    energyCounts[cost]--;
+                }
+            }
+
+            return energyCounts.Values.Sum() >= colorlessNeeded;
+        }
+
+        public static List<Attack> GetAttacks(CardInstance card, GameState state, ICardDatabase db)
+        {
+            CardDefinition definition = db.GetCardDefinition(card.CardDefinitionId);
+            return definition.Attacks.ToList();
         }
     }
 }

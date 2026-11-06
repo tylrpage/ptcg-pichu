@@ -29,6 +29,10 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
         InvalidChoiceIds,
         InvalidChoiceCount,
         IndistinctChoiceIds,
+        AttackerNotInActive,
+        InvalidIndex,
+        CannotAffordCost,
+        CannotAttackOnFirstGameTurn,
     }
     
     public static class RuleChecker
@@ -64,6 +68,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
                 {
                     possibleCommands.Add(PlayerCommand.AttachEnergy(isPlayer1, energy.Id, pokemon.Id));
                 }
+            }
+            
+            // Generate attack commands for each attack on active
+            for (int i = 0; i < CardQueries.GetAttacks(player.Active, state, db).Count; i++)
+            {
+                possibleCommands.Add(PlayerCommand.Attack(isPlayer1, player.Active.Id, i));
             }
             
             // Filter for legal commands
@@ -106,6 +116,8 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
                     return CheckAttachEnergy(state, command, db);
                 case CommandType.Choose:
                     return CheckChoose(state, command, db);
+                case CommandType.Attack:
+                    return CheckAttack(state, command, db);
                 case CommandType.EndTurn:
                     return RuleResult.Ok;
                 default:
@@ -235,6 +247,49 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
                 command.ChosenIds.Length < state.PendingChoice.Min)
             {
                 return RuleResult.InvalidChoiceCount;
+            }
+
+            return RuleResult.Ok;
+        }
+
+        private static RuleResult CheckAttack(GameState state, PlayerCommand command, ICardDatabase db)
+        {
+            if (state.IsPlayer1Turn != command.IsPlayer1)
+            {
+                return RuleResult.NotYourTurn;
+            }
+
+            if (CardQueries.IsFirstTurnOfPlayerGoingFirst(state))
+            {
+                return RuleResult.CannotAttackOnFirstGameTurn;
+            }
+
+            CardInstance attacker = state.FindCard(command.CardId);
+            if (attacker == null)
+            {
+                return RuleResult.CardNotFound;
+            }
+
+            if (attacker.IsOwnedByPlayer1 != command.IsPlayer1)
+            {
+                return RuleResult.NotOwned;
+            }
+
+            if (attacker.Zone != Zone.Active)
+            {
+                return RuleResult.AttackerNotInActive;
+            }
+
+            CardDefinition attackerDefinition = db.GetCardDefinition(attacker.CardDefinitionId);
+            if (command.ActionIndex < 0 || command.ActionIndex >= attackerDefinition.Attacks.Count)
+            {
+                return RuleResult.InvalidIndex;
+            }
+            Attack attack = attackerDefinition.Attacks[command.ActionIndex];
+
+            if (!CardQueries.CanPayCost(attack.Cost, attacker, state, db))
+            {
+                return RuleResult.CannotAffordCost;
             }
 
             return RuleResult.Ok;

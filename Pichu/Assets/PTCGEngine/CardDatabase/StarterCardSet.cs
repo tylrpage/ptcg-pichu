@@ -25,6 +25,16 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
                 Weakness = Element.Fighting,
                 Resistance = null,
                 RetreatCost = 0,
+                PrizeValue = 1,
+                Attacks = new()
+                {
+                    new Attack()
+                    {
+                        Cost = new(),
+                        Name = "Zapping Draw",
+                        Damage = 30,
+                    }
+                }
             });
             db.AddDefinition(new CardDefinition()
             {
@@ -37,6 +47,21 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
                 Weakness = Element.Lightning,
                 Resistance = Element.Fighting,
                 RetreatCost = 2,
+                PrizeValue = 3,
+                Attacks = new()
+                {
+                    new Attack()
+                    {
+                        Cost = new()
+                        {
+                            Element.Fire,
+                            Element.Lightning,
+                            Element.Colorless,
+                        },
+                        Name = "Storm Emerald",
+                        Damage = 300,
+                    }
+                }
             });
             db.AddDefinition(new CardDefinition()
             {
