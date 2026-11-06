@@ -97,5 +97,11 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
             CardDefinition definition = db.GetCardDefinition(card.CardDefinitionId);
             return definition.Attacks.ToList();
         }
+
+        public static int GetPrizeValue(CardInstance card, GameState state, ICardDatabase db)
+        {
+            CardDefinition definition = db.GetCardDefinition(card.CardDefinitionId);
+            return definition.PrizeValue;
+        }
     }
 }

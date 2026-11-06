@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using tylrpage.Pichu.PTCGEngine.CardDatabase;
 using tylrpage.Pichu.PTCGEngine.Core.Rules;
@@ -95,8 +96,14 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
         private static CommandResult RunToCompletion(ResolverContext ctx)
         {
             int iterations = 0;
+            int afterQueueCheckIterations = 0;
             while (true)
             {
+                if (afterQueueCheckIterations >= 1000)
+                {
+                    throw new InvalidOperationException("Reached game step after queue check limit");
+                }
+                
                 while (ctx.WorkingState.Phase != GamePhase.GameOver &&
                        ctx.WorkingState.StepQueue.Count > 0 &&
                        ctx.WorkingState.PendingChoice == null)
@@ -118,10 +125,11 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 // Shouldn't do any win checks until pending choice is made
                 if (ctx.WorkingState.PendingChoice == null)
                 {
+                    afterQueueCheckIterations++;
                     if (!RunAfterQueueChecks(ctx))
                     {
                         break;
-                    }   
+                    }
                 }
                 else
                 {
@@ -186,7 +194,75 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 stepQueued = true;
             }
             
-            // Win checks
+            // KO check
+            List<CardInstance> cardsInPlay = new();
+            for (int i = 0; i < 2; i++)
+            {
+                PlayerState player = ctx.WorkingState.GetPlayer(i == 0);
+                if (player.Active != null)
+                {
+                    cardsInPlay.Add(player.Active);   
+                }
+                cardsInPlay.AddRange(player.Bench);
+            }
+            foreach (CardInstance card in cardsInPlay)
+            {
+                if (CardQueries.GetRemainingHP(card, ctx.WorkingState, ctx.CardDatabase) <= 0)
+                {
+                    QueueNext(new KnockOutStep()
+                    {
+                        CardId = card.Id,
+                    });
+                }
+            }
+            if (stepQueued)
+            {
+                return true;
+            }
+            
+            // Prizes
+            if (ctx.WorkingState.Phase == GamePhase.Main)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    // 0: current turn player, 1: other player, that way current player takes their prizes first
+                    bool isPlayer1 = i == (ctx.WorkingState.IsPlayer1Turn ? 0 : 1);
+                    PlayerState player = ctx.WorkingState.GetPlayer(isPlayer1);
+                    if (player.OwedPrizeCards > 0)
+                    {
+                        QueueNext(new TakePrizesStep()
+                        {
+                            IsPlayer1 = isPlayer1,
+                            Prizes = player.OwedPrizeCards,
+                        });
+                    }
+                }
+                if (stepQueued)
+                {
+                    return true;
+                }   
+            }
+            
+            // Prize win check
+            for (int i = 0; i < 2; i++)
+            {
+                // Check current player first
+                bool isPlayer1 = i == (ctx.WorkingState.IsPlayer1Turn ? 0 : 1);
+                PlayerState player = ctx.WorkingState.GetPlayer(isPlayer1);
+                if (player.Prize.Count == 0)
+                {
+                    ctx.WorkingState.Player1Won = isPlayer1;
+                    ctx.WorkingState.Phase = GamePhase.GameOver;
+                    ctx.Events.Add(new PlayerLost()
+                    {
+                        IsPlayer1 = !isPlayer1,
+                    });
+
+                    return stepQueued;
+                }
+            }
+            
+            // Deckout loss checks
             if (ctx.WorkingState.Player1State.FailedToDrawCard)
             {
                 ctx.WorkingState.Player1Won = false;
@@ -209,6 +285,40 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 
                 return stepQueued;
             }
+            
+            // Promotion when no active
+            if (ctx.WorkingState.Phase == GamePhase.Main)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    // Check current player first
+                    bool isPlayer1 = i == (ctx.WorkingState.IsPlayer1Turn ? 0 : 1);
+                    PlayerState player = ctx.WorkingState.GetPlayer(isPlayer1);
+
+                    if (player.Active == null)
+                    {
+                        if (player.Bench.Count > 0)
+                        {
+                            QueueNext(new RequestChoicePromoteStep()
+                            {
+                                IsPlayer1 = isPlayer1,
+                            });
+                        }
+                        else
+                        {
+                            // Donked
+                            ctx.WorkingState.Player1Won = !isPlayer1;
+                            ctx.WorkingState.Phase = GamePhase.GameOver;
+                            ctx.Events.Add(new PlayerLost()
+                            {
+                                IsPlayer1 = isPlayer1,
+                            });
+                        }
+
+                        return stepQueued;
+                    }
+                }
+            }
 
             if (ctx.WorkingState.EndTurnRequested)
             {
@@ -216,6 +326,13 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 QueueNext(new StartTurnStep()
                 {
                     IsPlayer1 = !ctx.WorkingState.IsPlayer1Turn,
+                });
+                
+                // Append the event here rather than in the EndTurnStep so it shows up
+                // in the log last, not right after the attack for example
+                ctx.Events.Add(new TurnEnded()
+                {
+                    IsPlayer1 = ctx.WorkingState.IsPlayer1Turn,
                 });
             }
 

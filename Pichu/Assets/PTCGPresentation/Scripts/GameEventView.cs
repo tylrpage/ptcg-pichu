@@ -52,6 +52,12 @@ public class GameEventView : MonoBehaviour
             case DamageDealt damageDealt:
                 text = $"{GetCardDisplayName(damageDealt.AttackerId, state, db)} dealt {damageDealt.Final} damage to {GetCardDisplayName(damageDealt.TargetId, state, db)}";
                 break;
+            case KnockedOut knockedOut:
+                text = $"{GetCardDisplayName(knockedOut.CardId, state, db)} was knocked out";
+                break;
+            case PrizesTaken prizesTaken:
+                text = $"{GetPlayerString(prizesTaken.IsPlayer1)} took {prizesTaken.Prizes} prize cards";
+                break;
             default:
                 _text.text = $"UNKNOWN [{gameEvent.GetType()}]";
                 Debug.LogError($"Received unknown legal command: {gameEvent.GetType()}");

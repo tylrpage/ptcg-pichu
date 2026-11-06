@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using tylrpage.Pichu.PTCGEngine.CardDatabase;
+using tylrpage.Pichu.PTCGEngine.Core.Resolution;
 using tylrpage.Pichu.PTCGEngine.Core.Rules;
 
 namespace tylrpage.Pichu.PTCGEngine.Core
@@ -54,7 +55,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core
             List<string> fillerDeck = Enumerable.Repeat(player1.ActiveId, 60).ToList();
             GameState state = Create(db, fillerDeck, fillerDeck);
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 2; i++)
             {
                 bool isPlayer1 = i == 0;
                 BattleState battleState = isPlayer1 ? player1 : player2;
@@ -75,7 +76,13 @@ namespace tylrpage.Pichu.PTCGEngine.Core
                     CardInstance card = CreateCardInstance(state, db, benchId, isPlayer1);
                     Board.AddCardInstanceToZone(state, card, player, Zone.Bench);
                 }
+                
+                // Setup a prize so game doesnt instantly end
+                CardInstance prize = CreateCardInstance(state, db, battleState.ActiveId, isPlayer1);
+                Board.AddCardInstanceToZone(state, prize, player, Zone.Prize);
             }
+
+            state.Phase = GamePhase.Main;
             
             return state;
         }

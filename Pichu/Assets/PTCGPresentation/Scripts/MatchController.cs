@@ -62,6 +62,7 @@ public class MatchController : MonoBehaviour
 
         GameState = result.State;
         Log.AddRange(result.Events);
+
         UpdateLegalCommands();
     }
     
@@ -72,8 +73,12 @@ public class MatchController : MonoBehaviour
 
     private void UpdateLegalCommands()
     {
-        _p1LegalCommandCache = RuleChecker.GetLegalCommands(GameState, true, Db);
-        _p2LegalCommandCache = RuleChecker.GetLegalCommands(GameState, false, Db);
+        if (GameState.Phase != GamePhase.GameOver)
+        {
+            _p1LegalCommandCache = RuleChecker.GetLegalCommands(GameState, true, Db);
+            _p2LegalCommandCache = RuleChecker.GetLegalCommands(GameState, false, Db);   
+        }
+        
         StateChanged?.Invoke();
     }
 }

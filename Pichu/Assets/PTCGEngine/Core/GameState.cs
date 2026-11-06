@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using tylrpage.Pichu.PTCGEngine.Core.Resolution;
 using tylrpage.Pichu.PTCGEngine.Core.Serialization;
@@ -194,7 +195,8 @@ namespace tylrpage.Pichu.PTCGEngine.Core
             if (zone != Zone.Bench && zone != Zone.Active)
             {
                 // Attachments don't stay attached, move them separately
-                foreach (CardInstance attachment in OnlyAttachments(card))
+                // Need to use a copy, since moving the attachment will modify the collection
+                foreach (CardInstance attachment in OnlyAttachments(card).ToList())
                 {
                     MoveCard(attachment, zone);
                 }
@@ -207,6 +209,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core
                     // Update attachments' zones to match
                     attachment.Zone = zone; 
                 }
+            }
+            
+            // Clear damage for cards not in play
+            if (zone != Zone.Active && zone != Zone.Bench)
+            {
+                card.DamageCounters = 0;
             }
         }
 

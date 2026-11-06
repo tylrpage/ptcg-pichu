@@ -5,11 +5,6 @@
         public override void Run(ResolverContext ctx)
         {
             ctx.WorkingState.EndTurnRequested = true;
-            
-            ctx.Events.Add(new TurnEnded()
-            {
-                IsPlayer1 = ctx.WorkingState.IsPlayer1Turn,
-            });
         }
     }
 }

@@ -4,7 +4,7 @@ using tylrpage.Pichu.PTCGEngine.Core.Rules;
 
 namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 {
-    public class RequestChoiceActiveStep : GameStep
+    public class RequestChoiceStartingActiveStep : GameStep
     {
         public bool IsPlayer1;
         

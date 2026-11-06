@@ -27,11 +27,11 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 IsPlayer1 = false,
             },
             // Ask each player to put basic in active
-            new RequestChoiceActiveStep()
+            new RequestChoiceStartingActiveStep()
             {
                 IsPlayer1 = true,
             },
-            new RequestChoiceActiveStep()
+            new RequestChoiceStartingActiveStep()
             {
                 IsPlayer1 = false,
             });

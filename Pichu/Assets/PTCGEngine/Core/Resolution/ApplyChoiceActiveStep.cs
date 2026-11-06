@@ -2,6 +2,7 @@
 
 namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
 {
+    // Reused by starting active and promote request steps
     public class ApplyChoiceActiveStep : ApplyChoiceStep
     {
         public override void Run(ResolverContext ctx)

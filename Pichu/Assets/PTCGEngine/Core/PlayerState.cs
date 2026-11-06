@@ -14,5 +14,6 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public CardInstance Active;
         public bool FailedToDrawCard;
         public int MulliganCount;
+        public int OwedPrizeCards;
     }
 }
