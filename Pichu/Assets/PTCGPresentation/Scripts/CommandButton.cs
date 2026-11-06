@@ -35,7 +35,7 @@ public class CommandButton : MonoBehaviour
                 CardInstance attacker = controller.GameState.FindCard(command.CardId);
                 List<Attack> attacks = CardQueries.GetAttacks(attacker, controller.GameState, controller.Db);
                 Attack attack = attacks[command.ActionIndex];
-                _text.text = $"Attack: [{attack.Name}]";
+                _text.text = $"Attack: {attack.Name}";
                 break;
             default:
                 _text.text = $"UNKNOWN [{command.Type}]";

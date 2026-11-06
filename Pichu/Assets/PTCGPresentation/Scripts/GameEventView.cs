@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using tylrpage.Pichu.PTCGEngine.CardDatabase;
 using tylrpage.Pichu.PTCGEngine.Core;
+using tylrpage.Pichu.PTCGEngine.Core.Rules;
 using UnityEngine;
 
 // Represents a single game event
@@ -15,6 +16,9 @@ public class GameEventView : MonoBehaviour
         string text = "[None]";
         switch (gameEvent)
         {
+            case CoinFlipped coinFlipped:
+                text = $"Coin flipped: {(coinFlipped.IsHeads ? "heads" : "tails")}";
+                break;
             case CardMoved cardMoved:
                 text = $"{GetCardDisplayName(cardMoved.CardId, state, db)} moved from {cardMoved.From} to {cardMoved.To}";
                 break;
@@ -38,6 +42,19 @@ public class GameEventView : MonoBehaviour
                 break;
             case TurnStarted turnStarted:
                 text = $"{GetPlayerString(turnStarted.IsPlayer1)}'s turn has started";
+                break;
+            case AttackUsed attackUsed:
+                CardInstance attacker = state.FindCard(attackUsed.AttackerId);
+                List<Attack> attacks = CardQueries.GetAttacks(attacker, state, db);
+                Attack attack = attacks[attackUsed.AttackIndex];
+                text = $"Attack {attack.Name} used";
+                break;
+            case DamageDealt damageDealt:
+                text = $"{GetCardDisplayName(damageDealt.AttackerId, state, db)} dealt {damageDealt.Final} damage to {GetCardDisplayName(damageDealt.TargetId, state, db)}";
+                break;
+            default:
+                _text.text = $"UNKNOWN [{gameEvent.GetType()}]";
+                Debug.LogError($"Received unknown legal command: {gameEvent.GetType()}");
                 break;
         }
 

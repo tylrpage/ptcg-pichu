@@ -165,6 +165,14 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 case CommandType.EndTurn:
                     ctx.QueueNext(new EndTurnStep());
                     break;
+                case CommandType.Attack:
+                    ctx.QueueNext(new AttackStep()
+                    {
+                        IsPlayer1 = command.IsPlayer1,
+                        AttackerId = command.CardId,
+                        AttackIndexId = command.ActionIndex,
+                    });
+                    break;
             }
         }
         
