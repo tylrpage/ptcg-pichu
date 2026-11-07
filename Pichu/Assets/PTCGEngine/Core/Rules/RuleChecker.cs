@@ -33,6 +33,8 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
         InvalidIndex,
         CannotAffordCost,
         CannotAttackOnFirstGameTurn,
+        RetreatAlreadyUsedForTurn,
+        BenchEmpty,
     }
     
     public static class RuleChecker
@@ -50,6 +52,9 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
             
             // End turn
             possibleCommands.Add(PlayerCommand.EndTurn(isPlayer1));
+            
+            // Retreat
+            possibleCommands.Add(PlayerCommand.Retreat(isPlayer1));
             
             // Place basic
             // Generate for every pokemon in hand
@@ -118,6 +123,8 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
                     return CheckChoose(state, command, db);
                 case CommandType.Attack:
                     return CheckAttack(state, command, db);
+                case CommandType.Retreat:
+                    return CheckRetreat(state, command, db);
                 case CommandType.EndTurn:
                     return RuleResult.Ok;
                 default:
@@ -288,6 +295,29 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
             Attack attack = attackerDefinition.Attacks[command.ActionIndex];
 
             if (!CardQueries.CanPayCost(attack.Cost, attacker, state, db))
+            {
+                return RuleResult.CannotAffordCost;
+            }
+
+            return RuleResult.Ok;
+        }
+
+        private static RuleResult CheckRetreat(GameState state, PlayerCommand command, ICardDatabase db)
+        {
+            if (state.Turn.Retreated)
+            {
+                return RuleResult.RetreatAlreadyUsedForTurn;
+            }
+
+            PlayerState player = state.GetPlayer(command.IsPlayer1);
+            if (player.Bench.Count == 0)
+            {
+                return RuleResult.BenchEmpty;
+            }
+
+            CardInstance active = player.Active;
+            List<Element> retreatCost = CardQueries.GetRetreatCost(active, state, db);
+            if (!CardQueries.CanPayCost(retreatCost, active, state, db))
             {
                 return RuleResult.CannotAffordCost;
             }

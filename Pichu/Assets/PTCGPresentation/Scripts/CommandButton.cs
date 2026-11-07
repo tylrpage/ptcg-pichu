@@ -37,6 +37,9 @@ public class CommandButton : MonoBehaviour
                 Attack attack = attacks[command.ActionIndex];
                 _text.text = $"Attack: {attack.Name}";
                 break;
+            case CommandType.Retreat:
+                _text.text = $"Retreat";
+                break;
             default:
                 _text.text = $"UNKNOWN [{command.Type}]";
                 Debug.LogError($"Received unknown legal command: {command.Type}");

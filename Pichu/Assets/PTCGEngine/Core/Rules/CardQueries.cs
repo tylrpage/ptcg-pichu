@@ -60,9 +60,8 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
 
             return cardDefinition.Type;
         }
-        
-        // Only supports simple, single type energy for now
-        public static bool CanPayCost(List<Element> costs, CardInstance pokemon, GameState state, ICardDatabase db)
+
+        public static Dictionary<Element, int> GetAttachedEnergyCounts(CardInstance pokemon, GameState state, ICardDatabase db)
         {
             Dictionary<Element, int> energyCounts = new();
             foreach (CardInstance energy in pokemon.AttachedEnergy)
@@ -71,6 +70,14 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
                 energyCounts.TryAdd(element, 0);
                 energyCounts[element]++;
             }
+
+            return energyCounts;
+        }
+        
+        // Only supports simple, single type energy for now
+        public static bool CanPayCost(List<Element> costs, CardInstance pokemon, GameState state, ICardDatabase db)
+        {
+            Dictionary<Element, int> energyCounts = GetAttachedEnergyCounts(pokemon, state, db);
 
             int colorlessNeeded = 0;
             foreach (Element cost in costs)
@@ -102,6 +109,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
         {
             CardDefinition definition = db.GetCardDefinition(card.CardDefinitionId);
             return definition.PrizeValue;
+        }
+
+        public static List<Element> GetRetreatCost(CardInstance card, GameState state, ICardDatabase db)
+        {
+            CardDefinition definition = db.GetCardDefinition(card.CardDefinitionId);
+            return Enumerable.Repeat(Element.Colorless, definition.RetreatCost).ToList();
         }
     }
 }

@@ -8,5 +8,6 @@
         EndTurn = 3,
         Choose = 4,
         Attack = 5,
+        Retreat = 6,
     }
 }

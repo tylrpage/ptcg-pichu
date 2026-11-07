@@ -60,7 +60,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                     ctx.WorkingState.StepQueue.First.Value is not ApplyChoiceStep applyChoiceStep)
                 {
                     throw new InvalidOperationException(
-                        $"Received choose command but next step isn't expecting choice, next step: {ctx.WorkingState.StepQueue.First.Value.GetType()}");
+                        $"Received choose command: {command.Type} but next step isn't expecting choice, next step: {ctx.WorkingState.StepQueue.First.Value.GetType()}");
                 }
 
                 if (applyChoiceStep.ChoiceId != command.ChoiceRequestId)
@@ -181,6 +181,14 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                         AttackIndexId = command.ActionIndex,
                     });
                     break;
+                case CommandType.Retreat:
+                    ctx.QueueNext(new RetreatStep()
+                    {
+                        IsPlayer1 = command.IsPlayer1,
+                    });
+                    break;
+                default:
+                    throw new ArgumentException($"Unknown command: {command.Type}");
             }
         }
         

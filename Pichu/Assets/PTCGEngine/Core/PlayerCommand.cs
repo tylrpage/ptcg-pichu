@@ -97,5 +97,14 @@ namespace tylrpage.Pichu.PTCGEngine.Core
                 ActionIndex = actionIndex,
             };
         }
+
+        public static PlayerCommand Retreat(bool p1)
+        {
+            return new PlayerCommand()
+            {
+                Type = CommandType.Retreat,
+                IsPlayer1 = p1,
+            };
+        }
     }
 }
