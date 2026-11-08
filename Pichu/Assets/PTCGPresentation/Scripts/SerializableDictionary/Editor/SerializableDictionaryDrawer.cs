@@ -1,8 +1,7 @@
+#if UNITY_EDITOR
 using System;
 using System.Reflection;
-
 using UnityEngine;
-
 using UnityEditor;
 using UnityEditorInternal;
 
@@ -103,4 +102,4 @@ public class SerializableDictionaryDrawer : PropertyDrawer {
             return EditorGUIUtility.singleLineHeight;
     }
 }
-
+#endif
