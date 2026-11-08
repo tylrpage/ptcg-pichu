@@ -15,7 +15,8 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             Dictionary<Element, int> energyCounts =
                 CardQueries.GetAttachedEnergyCounts(player.Active, ctx.WorkingState, ctx.CardDatabase);
             List<Element> cost = CardQueries.GetRetreatCost(player.Active, ctx.WorkingState, ctx.CardDatabase);
-            
+
+            ctx.WorkingState.Turn.Retreated = true;
             if (energyCounts.Values.Sum() == cost.Count)
             {
                 // Active has exactly enough energy, skip the choice and pay all energy
