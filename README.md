@@ -1,5 +1,8 @@
 # Pichu
-Pichu is an engine for the Pokemon trading card game, with a unity interface to display and interact with the game engine. The current board state is displayed in the main left area. Legal commands and choices are shown as a list of buttons on the right. An event log is shown in the bottom right.
+Pichu is a Pokemon trading card game engine, with a unity interface to display and interact with the game engine.
+
+The current board state is displayed in the main left area. Legal commands and choices are shown as a list of buttons on the right. An event log is shown in the bottom right.
+
 ![Screenshot](Media/screenshot.png)
 
 # Implemented Cards
