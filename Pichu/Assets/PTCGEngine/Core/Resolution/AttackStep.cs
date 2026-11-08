@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using tylrpage.Pichu.PTCGEngine.Core.Effects;
 using tylrpage.Pichu.PTCGEngine.Core.Rules;
 
 namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
@@ -13,11 +14,9 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
         public override void Run(ResolverContext ctx)
         {
             CardInstance attacker = ctx.WorkingState.FindCard(AttackerId);
-            CardDefinition attackerDefinition = ctx.CardDatabase.GetCardDefinition(attacker.CardDefinitionId);
 
             // Always attack the other player's active for now
             CardInstance target = ctx.WorkingState.GetPlayer(!IsPlayer1).Active;
-            CardDefinition targetDefinition = ctx.CardDatabase.GetCardDefinition(target.CardDefinitionId);
             
             List<Attack> attacks = CardQueries.GetAttacks(attacker, ctx.WorkingState, ctx.CardDatabase);
             Attack attack = attacks[AttackIndexId];
@@ -30,39 +29,23 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
                 AttackIndex = AttackIndexId,
             });
 
-            int baseDamage = attack.Damage;
-            
-            // Weakness
-            int afterWeakness = baseDamage;
-            if (targetDefinition.Weakness != null && targetDefinition.Weakness == attackerDefinition.Type)
+            List<GameStep> steps = new();
+            foreach (CardEffect effect in attack.Effects)
             {
-                afterWeakness *= 2;
+                steps.Add(new RunEffectStep()
+                {
+                    Effect = effect,
+                    Source = new EffectSource()
+                    {
+                        IsPlayer1 = IsPlayer1,
+                        SourceCardId = AttackerId,
+                    }
+                });
             }
-            
-            // Resistance
-            int afterResistance = afterWeakness;
-            if (targetDefinition.Resistance != null && targetDefinition.Resistance == attackerDefinition.Type)
-            {
-                afterResistance -= 30;
-            }
-            
-            int finalDamage = Math.Max(0, afterResistance);
-
-            int damageCounters = finalDamage / 10;
-            target.DamageCounters += damageCounters;
-            ctx.Events.Add(new DamageDealt()
-            {
-                AttackerId = AttackerId,
-                TargetId = target.Id,
-                Base = baseDamage,
-                AfterWeakness = afterWeakness,
-                AfterResistance = afterResistance,
-                Final = finalDamage,
-                CountersPlaced = damageCounters,
-            });
-            
             // Attack ends turns
-            ctx.QueueNext(new EndTurnStep() { });
+            steps.Add(new EndTurnStep() { });
+            
+            ctx.QueueNext(steps);
         }
     }
 }

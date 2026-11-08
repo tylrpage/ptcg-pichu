@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using tylrpage.Pichu.PTCGEngine.Core.Effects;
 
 namespace tylrpage.Pichu.PTCGEngine.Core
 {
@@ -26,6 +27,6 @@ namespace tylrpage.Pichu.PTCGEngine.Core
     {
         public string Name;
         public List<Element> Cost;
-        public int Damage;
+        public List<CardEffect> Effects;
     }
 }

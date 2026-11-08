@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using tylrpage.Pichu.PTCGEngine.Core;
+using tylrpage.Pichu.PTCGEngine.Core.Effects;
+using tylrpage.Pichu.PTCGEngine.Core.Value;
 
 namespace tylrpage.Pichu.PTCGEngine.CardDatabase
 {
@@ -32,7 +34,16 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
                     {
                         Cost = new(),
                         Name = "Zapping Draw",
-                        Damage = 30,
+                        Effects = new List<CardEffect>()
+                        {
+                            new DealDamageEffect()
+                            {
+                                Amount = new ConstantValue()
+                                {
+                                    Value = 30
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -59,7 +70,16 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
                             Element.Colorless,
                         },
                         Name = "Storm Emerald",
-                        Damage = 300,
+                        Effects = new List<CardEffect>()
+                        {
+                            new DealDamageEffect()
+                            {
+                                Amount = new ConstantValue()
+                                {
+                                    Value = 300
+                                }
+                            }
+                        }
                     }
                 }
             });
