@@ -8259,6 +8259,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: PTCGPresentation::MatchHUDView
   _turnAndPlayerText: {fileID: 1459661023}
   _phaseAndSeedText: {fileID: 1996242988}
+  _backgroundImage: {fileID: 1886307364}
+  _player1Color: {r: 0.15294118, g: 0.20392157, b: 0.31764707, a: 1}
+  _player2Color: {r: 0.28235295, g: 0.19215687, b: 0.14117648, a: 1}
 --- !u!1 &1996242986
 GameObject:
   m_ObjectHideFlags: 0
