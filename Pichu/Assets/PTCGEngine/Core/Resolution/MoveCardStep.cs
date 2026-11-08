@@ -4,6 +4,7 @@
     {
         public int CardId;
         public Zone To;
+        public bool ToBottom;
         
         public override void Run(ResolverContext ctx)
         {
@@ -12,6 +13,11 @@
             int parentId = card.ParentCardInstanceId;
             
             ctx.WorkingState.MoveCard(card, To);
+            if (ToBottom)
+            {
+                ctx.WorkingState.MoveCardToBottomOfDeck(card);
+            }
+            
             ctx.Events.Add(new CardMoved()
             {
                 CardId = CardId,

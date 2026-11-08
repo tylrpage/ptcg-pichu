@@ -12,9 +12,12 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Value
         public override int Evaluate(ResolverContext ctx, EffectSource source)
         {
             PlayerState player = ctx.WorkingState.GetPlayer(source.IsPlayer1);
-            List<CardInstance> pokemonInPlay = player.Bench
-                .Append(player.Active)
-                .ToList();
+            List<CardInstance> pokemonInPlay = new();
+            if (player.Active != null)
+            {
+                pokemonInPlay.Add(player.Active);
+            }
+            pokemonInPlay.AddRange(player.Bench);
 
             int energyCount = 0;
             foreach (CardInstance pokemon in pokemonInPlay)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using tylrpage.Pichu.PTCGEngine.CardDatabase;
 using tylrpage.Pichu.PTCGEngine.Core;
@@ -57,6 +58,12 @@ public class GameEventView : MonoBehaviour
                 break;
             case PrizesTaken prizesTaken:
                 text = $"{GetPlayerString(prizesTaken.IsPlayer1)} took {prizesTaken.Prizes} prize cards";
+                break;
+            case AbilityTriggered abilityTriggered:
+                text = $"{GetCardDisplayName(abilityTriggered.CardId, state, db)}'s ability triggered";
+                break;
+            case LookedAtCards lookedAtCards:
+                text = $"Look at: {string.Join(", ", lookedAtCards.CardIds.Select(x => GetCardDisplayName(x, state, db)))}";
                 break;
             default:
                 _text.text = $"UNKNOWN [{gameEvent.GetType()}]";

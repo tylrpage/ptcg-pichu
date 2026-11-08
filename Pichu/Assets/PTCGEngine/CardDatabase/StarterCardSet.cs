@@ -66,7 +66,7 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
                 Resistance = Element.Fighting,
                 RetreatCost = 2,
                 PrizeValue = 3,
-                Attacks = new()
+                Attacks = new List<Attack>()
                 {
                     new Attack()
                     {
@@ -86,6 +86,19 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
                                     PerEnergy = 50
                                 }
                             }
+                        }
+                    }
+                },
+                Ability = new Ability()
+                {
+                    Name = "Ruler's Roar",
+                    Trigger = TriggerType.PlayedToBenchFromHand,
+                    Scope = TriggerScope.Self,
+                    Effects = new List<CardEffect>()
+                    {
+                        new AttachEnergyFromTopDeckEffect()
+                        {
+                            LookCount = 4,
                         }
                     }
                 }

@@ -20,7 +20,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public PokemonStage Stage;
         public CardFormat Format;
         public List<Attack> Attacks = new();
-        // public List<Action> Abilities = new();
+        public Ability Ability;
     }
 
     public class Attack
@@ -28,5 +28,24 @@ namespace tylrpage.Pichu.PTCGEngine.Core
         public string Name;
         public List<Element> Cost;
         public List<CardEffect> Effects;
+    }
+
+    public class Ability
+    {
+        public string Name;
+        public TriggerType Trigger;
+        public TriggerScope Scope;
+        public List<CardEffect> Effects;
+    }
+
+    public enum TriggerType
+    {
+        PlayedToBenchFromHand,
+    }
+
+    public enum TriggerScope
+    {
+        Self,
+        Any,
     }
 }

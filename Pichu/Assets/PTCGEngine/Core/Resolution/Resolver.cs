@@ -157,10 +157,16 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             {
                 case CommandType.PlaceBasic:
                     ctx.QueueNext(new MoveCardStep()
-                    {
-                        CardId = command.CardId,
-                        To = Zone.Bench,
-                    });
+                        {
+                            CardId = command.CardId,
+                            To = Zone.Bench,
+                        },
+                        new TriggerStep()
+                        {
+                            Type = TriggerType.PlayedToBenchFromHand,
+                            CardId = command.CardId,
+                            IsPlayer1 = command.IsPlayer1,
+                        });
                     break;
                 case CommandType.ManualAttachEnergy:
                     ctx.QueueNext(new AttachEnergyStep()

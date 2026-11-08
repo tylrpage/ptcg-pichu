@@ -172,6 +172,27 @@ namespace tylrpage.Pichu.PTCGEngine.Core
             }
         }
 
+        public void MoveCardToBottomOfDeck(CardInstance card)
+        {
+            if (card.Zone != Zone.Deck)
+            {
+                throw new InvalidOperationException($"Card is not in a deck");
+            }
+
+            PlayerState player = GetPlayer(card.IsOwnedByPlayer1);
+            for (int i = 0; i < player.Deck.Count; i++)
+            {
+                if (player.Deck[i].Id == card.Id)
+                {
+                    player.Deck.RemoveAt(i);
+                    player.Deck.Insert(0, card);
+                    return;
+                }
+            }
+            
+            throw new InvalidOperationException($"Card not found in deck");
+        }
+
         public void MoveCard(CardInstance card, Zone zone)
         {
             RemoveCardFromCurrentLocation(card);

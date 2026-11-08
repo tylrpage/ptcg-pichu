@@ -16,6 +16,13 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Rules
             // todo: handle fossils
             return IsPokemon(card, state, db) && cardDefinition.Stage == PokemonStage.Basic;
         }
+        
+        public static bool IsBasicEnergy(CardInstance card, GameState state, ICardDatabase db)
+        {
+            CardDefinition cardDefinition = db.GetCardDefinition(card.CardDefinitionId);
+
+            return cardDefinition.Format == CardFormat.Energy;
+        }
 
         public static bool IsEnergy(CardInstance card, GameState state, ICardDatabase db)
         {
