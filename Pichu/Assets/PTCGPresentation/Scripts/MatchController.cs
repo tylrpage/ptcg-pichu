@@ -21,6 +21,7 @@ public class MatchController : MonoBehaviour
     public ICardDatabase Db { get; private set; }
     public GameState GameState { get; private set; }
     public ulong Seed => _seed;
+    public bool WaitingToStart { get; private set; } = true;
     
     private List<PlayerCommand> _p1LegalCommandCache;
     private List<PlayerCommand> _p2LegalCommandCache;
@@ -28,6 +29,13 @@ public class MatchController : MonoBehaviour
     private void Awake()
     {
         Db = StarterCardSet.CreateDatabase();
+    }
+    
+    public void ResetGame(ulong seed)
+    {
+        _seed = seed;
+        WaitingToStart = false;
+        
         List<string> deckList = StarterCardSet.Deck(_pichus, _rayquazas, _lightning, _fire);
         GameState state = GameStateFactory.Create(Db, deckList, deckList);
         CommandResult result = Resolver.StartGame(state, _seed, Db);

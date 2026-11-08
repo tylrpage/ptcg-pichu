@@ -21,7 +21,7 @@ public class CardView : MonoBehaviour
             return;
         }
         
-        _idText.text = cardInstance.Id.ToString();
+        _idText.text = $"#{cardInstance.Id}";
         _nameText.text = db.GetCardDefinition(cardInstance.CardDefinitionId).Name;
 
         _hpText.gameObject.SetActive(false);
@@ -29,7 +29,7 @@ public class CardView : MonoBehaviour
         {
             _hpText.gameObject.SetActive(true);
             _hpText.text =
-                $"{CardQueries.GetRemainingHP(cardInstance, state, db)}/{CardQueries.GetMaxHP(cardInstance, state, db)}";
+                $"HP {CardQueries.GetRemainingHP(cardInstance, state, db)}/{CardQueries.GetMaxHP(cardInstance, state, db)}";
         }
 
         // Clear energies

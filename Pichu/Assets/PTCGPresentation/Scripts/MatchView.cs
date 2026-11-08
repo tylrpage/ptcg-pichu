@@ -19,6 +19,10 @@ public class MatchView : MonoBehaviour
         {
             OnStateChanged();   
         }
+        else
+        {
+            _overlay.Render(_matchController);
+        }
     }
 
     private void OnDisable()
@@ -37,6 +41,6 @@ public class MatchView : MonoBehaviour
         _choiceSelection.Render(_matchController);
         _gameLog.Render(_matchController.Log, _matchController.GameState, _matchController.Db);
         
-        _overlay.Render(_matchController.GameState);
+        _overlay.Render(_matchController);
     }
 }
