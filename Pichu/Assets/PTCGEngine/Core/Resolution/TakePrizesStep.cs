@@ -23,7 +23,7 @@ namespace tylrpage.Pichu.PTCGEngine.Core.Resolution
             ctx.Events.Add(new PrizesTaken()
             {
                 IsPlayer1 = IsPlayer1,
-                Prizes = Prizes,
+                Prizes = prizesCanTake,
             });
 
             player.OwedPrizeCards = 0;
