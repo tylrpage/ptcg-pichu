@@ -32,8 +32,8 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
                 {
                     new Attack()
                     {
-                        Cost = new(),
                         Name = "Zapping Draw",
+                        Cost = new(),
                         Effects = new List<CardEffect>()
                         {
                             new DealDamageEffect()
@@ -70,20 +70,20 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
                 {
                     new Attack()
                     {
+                        Name = "Storm Emerald",
                         Cost = new()
                         {
                             Element.Fire,
                             Element.Lightning,
                             Element.Colorless,
                         },
-                        Name = "Storm Emerald",
                         Effects = new List<CardEffect>()
                         {
                             new DealDamageEffect()
                             {
-                                Amount = new ConstantValue()
+                                Amount = new PerEnergyInPlay()
                                 {
-                                    Value = 300
+                                    PerEnergy = 50
                                 }
                             }
                         }
