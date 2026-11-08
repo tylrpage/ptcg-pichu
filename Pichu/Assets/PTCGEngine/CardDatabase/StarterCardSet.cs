@@ -42,6 +42,13 @@ namespace tylrpage.Pichu.PTCGEngine.CardDatabase
                                 {
                                     Value = 30
                                 }
+                            },
+                            new DrawCardsEffect()
+                            {
+                                Count = new ConstantValue()
+                                {
+                                    Value = 1,
+                                }
                             }
                         }
                     }
