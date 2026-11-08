@@ -1,6 +1,8 @@
 # Pichu
 Pichu is a Pokemon trading card game engine, with a unity interface to display and interact with the game engine.
 
+[Try it out for yourself on itch.io!](https://tylr.itch.io/pichu-pokemon-tcg-engine)
+
 The current board state is displayed in the main left area. Legal commands and choices are shown as a list of buttons on the right. An event log is shown in the bottom right.
 
 ![Screenshot](Media/screenshot.png)
@@ -44,7 +46,7 @@ Card are represented entirely by serializable data. Cards are initialized in `St
 3. Deterministic RNG
 	1. Two games with the same seed will play out exactly the same given the same PlayerCommands are made, including: shuffles, draws, and coinflips
 	2. All actions that require RNG run through a deterministic random number generator (`TinyRNG`)
-	3. Types with non-deterministic operations such as `float` are avoid
+	3. Types with non-deterministic operations such as `float` are avoided
 4. PlayerCommand generation and shared validation
 	1. All possible actions a player can take are generated, verified, and displayed to the player (`RuleChecker.GetLegalCommands`)
 	2. The presentation layer uses the same `PlayerCommand` verification that the engine uses: `RuleChecker.Check()`
@@ -79,11 +81,12 @@ These are the game mechanics that Pichu supports:
 4. One manual energy attachment per turn
 5. One manual retreat per turn, with choice of energy to discard
 6. Attacking, with effects
-7. Damage counters and remaining HP tracking
-8. Auto triggerable abilities
-9. Ending turn
-10. KO check, including drawing prize cards and choosing benched Pokemon to promote
-11. Game over checks: deckout, no Pokemon remaining, no prize cards remaining
+7. Basic energy cost calculation (multi element color not supported)
+8. Damage counters and remaining HP tracking
+9. Auto triggerable abilities
+10. Ending turn
+11. KO check, including drawing prize cards and choosing benched Pokemon to promote
+12. Game over checks: deckout, no Pokemon remaining, no prize cards remaining
 
 # AI Use
 All code in this repository (except `SerializableDictionary.cs`) is written by me. Claude Code, running Opus 5.5, was used to create a project plan, answer questions, and review code.
